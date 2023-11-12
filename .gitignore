@@ -32,5 +32,6 @@ package-lock.json
 #Test
 /phpunit.xml
 /phpunit.core.xml
+.phpunit.result.cache
 
 # Others

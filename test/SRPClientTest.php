@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Windwalker\SRP\SRPClient;
 use Windwalker\SRP\SRPServer;
 
-class SRPTest extends TestCase
+class SRPClientTest extends TestCase
 {
     /**
      * @return  void
@@ -40,23 +40,17 @@ class SRPTest extends TestCase
         [M2] => 2f6b44340bf8dc05148b6b3ae1d70b6a896588ba6b2c16d8aec619d2cc57653f
          */
 
-        $salt = BigInteger::fromBase($data['s'], 16);
-        $identity = $data['I'];
-        $password = $data['P'];
-
         $client = SRPClient::create(
             $data['N'],
             $data['g'],
             $data['k']
         );
         $client->setSize($data['size']);
+        $client->setAlgo($data['H']);
 
-        $server = SRPServer::create(
-            $data['N'],
-            $data['g'],
-            $data['k']
-        );
-        $server->setSize($data['size']);
+        $salt = BigInteger::fromBase($data['s'], 16);
+        $identity = $data['I'];
+        $password = $data['P'];
 
         // Test random private (a or b)
         $rand = $client->generateRandomPrivate();
@@ -64,33 +58,24 @@ class SRPTest extends TestCase
         self::assertEquals(
             strlen($data['A']),
             strlen($rand->toBase(16)),
-            'The private key (a) length not equals'
+            'The private key [a] length not equals'
         );
 
-        $rand = $server->generateRandomPrivate();
+        $x2 = sha1((string) $salt->toBase(16) . (sha1($identity . ':' . $password)));
 
-        self::assertEquals(
-            strlen($data['B']),
-            strlen($rand->toBase(16)),
-            'The private key (b) length not equals'
-        );
+        show($x2);
+
+        // Test x
+        $x = $client->generateX($salt, $identity, $password);
+
+        self::assertEquals($data['x'], $x->toBase(16), 'The [x] not equals');
 
         $v = BigInteger::fromBase($data['v'], 16);
         $a = BigInteger::fromBase($data['a'], 16);
         $A = $client->generatePublic($a);
 
         // Test A
-        self::assertEquals($data['A'], $A->toBase(16), 'The A not expected');
-
-        // $b = $server->generateRandomPrivate($data['size']);
-        $b = BigInteger::fromBase($data['b'], 16);
-        $B = $server->generatePublic($b, $v);
-
-        // Test B
-        self::assertEquals($data['B'], $B->toBase(16), 'The B not expected');
-
-        // x
-
+        self::assertEquals($data['A'], $A->toBase(16), 'The [A] not expected');
     }
 
     public static function vectorsProvider(): array
@@ -106,7 +91,7 @@ class SRPTest extends TestCase
         $items = [];
 
         $allowAlgos = [
-            'sha256'
+            'sha1'
         ];
 
         $allowSizes = [

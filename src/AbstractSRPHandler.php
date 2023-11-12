@@ -87,27 +87,6 @@ abstract class AbstractSRPHandler
         return BigInteger::fromBase($hex, 16);
     }
 
-    /**
-     * Generate public [A] or [B]
-     *
-     * ((k*v + g^b) % N)
-     *
-     * @param  BigInteger  $private  (a) or (b)
-     *
-     * @return  BigInteger [A] or [B]
-     *
-     * @throws \Brick\Math\Exception\DivisionByZeroException
-     * @throws \Brick\Math\Exception\MathException
-     * @throws \Brick\Math\Exception\NegativeNumberException
-     */
-    public function generatePublic(BigInteger $private, BigInteger $verifier): BigInteger
-    {
-        return $this->getKey()
-            ->multipliedBy($verifier)
-            ->plus($this->getGenerator()->modPow($private, $this->getPrime()))
-            ->mod($this->getPrime());
-    }
-
     public function getAlgo(): string
     {
         return $this->algo;
@@ -189,12 +168,12 @@ abstract class AbstractSRPHandler
 
     protected function hash(\Stringable|string ...$args): BigInteger
     {
-        return BigInteger::of($this->hashToString(implode('', $args)));
+        return static::bigInteger($this->hashToString(implode('', $args)), 16);
     }
 
     protected function hashToString(\Stringable|string $str): string
     {
-        return hash($this->getOption('algo', 'sha256'), (string) $str);
+        return hash($this->getAlgo(), (string) $str);
     }
 
     protected static function checkNotEmpty(mixed $num, string $name): void

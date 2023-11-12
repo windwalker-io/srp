@@ -123,6 +123,27 @@ class SRPServer extends AbstractSRPHandler
     }
 
     /**
+     * Generate public [B]
+     *
+     * ((k*v + g^b) % N)
+     *
+     * @param  BigInteger  $private  (b)
+     *
+     * @return  BigInteger [B]
+     *
+     * @throws \Brick\Math\Exception\DivisionByZeroException
+     * @throws \Brick\Math\Exception\MathException
+     * @throws \Brick\Math\Exception\NegativeNumberException
+     */
+    public function generatePublic(BigInteger $private, BigInteger $verifier): BigInteger
+    {
+        return $this->getKey()
+            ->multipliedBy($verifier)
+            ->plus($this->getGenerator()->modPow($private, $this->getPrime()))
+            ->mod($this->getPrime());
+    }
+
+    /**
      * @throws DivisionByZeroException
      * @throws NegativeNumberException
      * @throws MathException
