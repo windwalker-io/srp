@@ -36,6 +36,7 @@ class SRPServerTest extends TestCase
             $data['g'],
             $data['k']
         );
+        $server->setAlgo($data['H']);
         $server->setSize($data['size']);
 
         $identity = $data['I'];
@@ -53,18 +54,18 @@ class SRPServerTest extends TestCase
         $M2 = $server->generateServerSessionProof($A, $M1, $K);
 
         // Test B
-        self::assertEquals($data['B'], $B->toBase(16), 'The B not expected');
+        self::assertHexEquals($data['B'], $B->toBase(16), 'The B not expected');
 
         // Test [S]
-        self::assertEquals($data['S'], $S->toBase(16), 'The S not expected');
+        self::assertHexEquals($data['S'], $S->toBase(16), 'The S not expected');
 
         // Test [K]
-        self::assertEquals($data['K'], $K->toBase(16), 'The K not expected');
+        self::assertHexEquals($data['K'], $K->toBase(16), 'The K not expected');
 
         // Test [M1]
-        self::assertEquals($data['M1'], $M1->toBase(16), 'The M2 not expected');
+        self::assertHexEquals($data['M1'], $M1->toBase(16), 'The M2 not expected');
 
         // Test [M2]
-        self::assertEquals($data['M2'], $M2->toBase(16), 'The [M2] not expected');
+        self::assertHexEquals($data['M2'], $M2->toBase(16), 'The [M2] not expected');
     }
 }

@@ -11,7 +11,9 @@ use Brick\Math\Exception\NumberFormatException;
 abstract class AbstractSRPHandler
 {
     public const SECRET_128BIT = 16;
+
     public const SECRET_192BIT = 24;
+
     public const SECRET_256BIT = 32;
 
     protected const DEFAULT_PRIME = '217661744586174357731910088918027537819076683742555385111446432246898862353838409572109' .
@@ -38,7 +40,8 @@ abstract class AbstractSRPHandler
         return BigInteger::fromBase($num, $from);
     }
 
-    public static function createFromConfig(array $config): static {
+    public static function createFromConfig(array $config): static
+    {
         return static::create(
             $config['prime'] ?? null,
             $config['generator'] ?? null,
@@ -138,7 +141,7 @@ abstract class AbstractSRPHandler
      *
      * (M1 = H(H(N) xor H(g), H(I), s, A, B, K))
      *
-     * @param  string  $identity
+     * @param  string      $identity
      * @param  BigInteger  $salt
      * @param  BigInteger  $A
      * @param  BigInteger  $B
@@ -232,7 +235,21 @@ abstract class AbstractSRPHandler
 
     protected function hashToString(\Stringable|string $str): string
     {
-        return hash($this->getAlgo(), (string) $str);
+        $algo = strtolower($this->getAlgo());
+
+        return match ($algo) {
+            'sha1', 'sha256', 'sha384', 'sha512' => hash($algo, (string) $str),
+            'blake2s-256' => $this->blake($str, 'blake2s', 256),
+            'blake2b-224' => $this->blake($str, 'blake2b', 224),
+            'blake2b-256' => $this->blake($str, 'blake2b', 256),
+            'blake2b-384' => $this->blake($str, 'blake2b', 384),
+            'blake2b-512' => $this->blake($str, 'blake2b', 512),
+        };
+    }
+
+    protected function blake(string $str, string $algo, int $size): string
+    {
+        return sodium_bin2hex(sodium_crypto_generichash( $str, '', $size / 8));
     }
 
     protected static function checkNotEmpty(mixed $num, string $name): void
