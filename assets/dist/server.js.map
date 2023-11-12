@@ -1,0 +1,1 @@
+{"version":3,"file":"server.js","sources":["../src/server.ts"],"sourcesContent":["\nexport default class SRPServer {\n\n}\n"],"names":[],"mappings":";;;;;;AACA,QAAA,SAAA,kBAAA,YAAA;IAAA,IAAA,SAAA,SAAA,GAAA;SAEC;QAAD,OAAC,SAAA,CAAA;IAAD,CAAC,EAAA;;;;;;;;"}

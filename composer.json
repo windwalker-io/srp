@@ -1,0 +1,36 @@
+{
+    "name": "windwalker/srp",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Windwalker\\SRP\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Windwalker\\SRP\\Test\\": "test/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Simon Asika",
+            "email": "asika32764@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "php": ">=8.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0.5"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6",
+        "windwalker/crypt": "^4.0",
+        "brick/math": "^0.11.0",
+        "windwalker/utilities": "^4.0"
+    }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"client.mjs","sources":["../src/client.ts"],"sourcesContent":["\nexport default class SRPClient {\n\n}\n"],"names":[],"mappings":"AACA,IAAA,SAAA,kBAAA,YAAA;AAAA,IAAA,SAAA,SAAA,GAAA;KAEC;IAAD,OAAC,SAAA,CAAA;AAAD,CAAC,EAAA;;;;"}
