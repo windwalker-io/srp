@@ -92,7 +92,7 @@ class SRPServer extends AbstractSRPHandler
 
         $B = $this->generatePublic($b, $verifier);
 
-        $u = $this->computeU($A, $B);
+        $u = $this->generateCommonSecret($A, $B);
 
         $S = $this->generatePreMasterSecret($A, $b, $verifier, $u);
 
@@ -100,17 +100,7 @@ class SRPServer extends AbstractSRPHandler
         $K = $this->hash($S);
 
         // M = H(H(N) xor H(g), H(I), s, A, B, K)
-        $M2 = $this->hash(
-            $this->hash($this->getPrime())
-                ->xor(
-                    $this->hash($this->getGenerator())
-                ),
-            $this->hash($identity),
-            $salt, // s
-            $A,
-            $B,
-            $K
-        );
+        $M2 = $this->generateClientSessionProof($identity, $salt, $A, $B, $K);
 
         if (!hash_equals((string) $M2, (string) $M1)) {
             throw new \InvalidArgumentException('Invalid client session proof', 401);

@@ -125,15 +125,62 @@ abstract class AbstractSRPHandler
      * @return  BigInteger
      * @throws NumberFormatException
      */
-    protected function computeU(BigInteger $A, BigInteger $B): BigInteger
+    public function generateCommonSecret(BigInteger $A, BigInteger $B): BigInteger
     {
         static::checkNotEmpty($A, 'A');
         static::checkNotEmpty($B, 'B');
 
-        return BigInteger::fromBase(
-            $this->hashToString($this->pad($A) . $this->pad($B)),
-            16
+        return $this->hash($this->pad($A), $this->pad($B));
+    }
+
+    /**
+     * [M1]
+     *
+     * (M1 = H(H(N) xor H(g), H(I), s, A, B, K))
+     *
+     * @param  string  $identity
+     * @param  BigInteger  $salt
+     * @param  BigInteger  $A
+     * @param  BigInteger  $B
+     * @param  BigInteger  $K
+     *
+     * @return  BigInteger
+     */
+    public function generateClientSessionProof(
+        string $identity,
+        BigInteger $salt,
+        BigInteger $A,
+        BigInteger $B,
+        BigInteger $K
+    ): BigInteger {
+        return $this->hash(
+            $this->hash($this->getPrime())
+                ->xor($this->hash($this->getGenerator())),
+            $this->hash($identity),
+            $salt, // s
+            $A,
+            $B,
+            $K
         );
+    }
+
+    /**
+     * [M2]
+     *
+     * (H(A | M | K))
+     *
+     * @param  BigInteger  $A
+     * @param  BigInteger  $M
+     * @param  BigInteger  $K
+     *
+     * @return  BigInteger
+     */
+    public function generateServerSessionProof(
+        BigInteger $A,
+        BigInteger $M,
+        BigInteger $K
+    ): BigInteger {
+        return $this->hash($A, $M, $K);
     }
 
     /**
@@ -166,8 +213,20 @@ abstract class AbstractSRPHandler
         return $this->key;
     }
 
-    protected function hash(\Stringable|string ...$args): BigInteger
+    public function hash(\Stringable|string ...$args): BigInteger
     {
+        // All hashing string must be binary
+        $args = array_map(
+            static function ($arg) {
+                if ($arg instanceof BigInteger) {
+                    return hex2bin(SRPUtils::bt2hex($arg));
+                }
+
+                return $arg;
+            },
+            $args
+        );
+
         return static::bigInteger($this->hashToString(implode('', $args)), 16);
     }
 
@@ -187,7 +246,7 @@ abstract class AbstractSRPHandler
         }
     }
 
-    protected static function intToBytes(BigInteger $val): string
+    public static function intToBytes(BigInteger $val): string
     {
         $hexStr = $val->toBase(16);
 
@@ -196,10 +255,10 @@ abstract class AbstractSRPHandler
         return pack('H*', $hexStr);
     }
 
-    protected function pad(BigInteger $val): string
+    protected function pad(BigInteger $val): BigInteger
     {
         $length = strlen(static::intToBytes($this->getPrime()));
 
-        return str_pad((string) $val, $length, '0');
+        return BigInteger::of(str_pad((string) $val, $length, '0'));
     }
 }
