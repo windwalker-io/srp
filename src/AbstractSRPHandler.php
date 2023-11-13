@@ -54,9 +54,9 @@ abstract class AbstractSRPHandler
         BigInteger|string $generator = null,
         BigInteger|string $key = null
     ): static {
-        $prime ??= static::DEFAULT_PRIME;
-        $generator ??= static::DEFAULT_GENERATOR;
-        $key ??= static::DEFAULT_KEY;
+        $prime ??= static::bigInteger(static::DEFAULT_PRIME);
+        $generator ??= static::bigInteger(static::DEFAULT_GENERATOR);
+        $key ??= static::bigInteger(static::DEFAULT_KEY, 16);
 
         return new static(
             static::bigInteger($prime, 16),

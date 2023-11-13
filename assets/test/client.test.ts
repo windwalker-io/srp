@@ -1,6 +1,6 @@
-
 import testData from '../../test/data/test-vectors.json';
 import { SRPClient } from '../src/srp';
+import type { HasherFunction } from '../src/types';
 
 const allowHashes = ['sha1'];
 const allowSizes = [1024];
@@ -8,29 +8,32 @@ const allowSizes = [1024];
 const testVectors = handleTestVectors(testData.testVectors);
 
 describe('SRPClientTest', () => {
-  test.each(testVectors)('testing with input: $H:$size', (data) => {
-    const client = new SRPClient();
+  test.each(testVectors)('testing with input: $H:$size', async (data) => {
+    const client = SRPClient.create();
+    client.setSize(data.size);
+
+    client.setHasher(await getHasher(data.H));
 
     const salt = BigInt(`0x${data.s}`);
     const identity = data.I;
     const password = data.P;
 
     // Test [x]
-    const x = client.generatePasswordHash(salt, identity, password);
+    const x = await client.generatePasswordHash(salt, identity, password);
     expect(x.toString(16)).toBe(data.x);
 
     // Test [v]
-    const v = client.generateVerifier(x);
+    const v = await client.generateVerifier(x);
     expect(v.toString(16)).toBe(data.v);
 
     const a = BigInt(`0x${data.a}`);
     const B = BigInt(`0x${data.B}`);
-    const A = client.generatePublic(a);
-    const u = client.generateCommonSecret(A, B);
-    const S = client.generatePreMasterSecret(a, B, x, u);
-    const K = client.hash(S);
-    const M1 = client.generateClientSessionProof(identity, salt, A, B, K);
-    const M2 = client.generateServerSessionProof(A, M1, K);
+    const A = await client.generatePublic(a);
+    const u = await client.generateCommonSecret(A, B);
+    const S = await client.generatePreMasterSecret(a, B, x, u);
+    const K = await client.hash(S);
+    const M1 = await client.generateClientSessionProof(identity, salt, A, B, K);
+    const M2 = await client.generateServerSessionProof(A, M1, K);
 
     // Test [A]
     expect(A.toString(16)).toBe(data.A);
@@ -66,6 +69,24 @@ function handleTestVectors(testVectors: typeof testData.testVectors) {
   });
 }
 
+async function getHasher(H: string): Promise<HasherFunction> {
+  const {
+    sha1,
+    sha256,
+    sha384,
+    sha512
+  } = await import('crypto-hash');
 
+  switch (H) {
+    case 'sha1':
+      return async (str: ArrayBufferLike) => sha1(str);
+    case 'sha256':
+      return async (str: ArrayBufferLike) => sha256(str);
+    case 'sha384':
+      return async (str: ArrayBufferLike) => sha384(str);
+    case 'sha512':
+      return async (str: ArrayBufferLike) => sha512(str);
+  }
+}
 
 

@@ -1,4 +1,1 @@
-
-export default class SRPServer {
-
-}
+export { default } from './services/SRPServer';
