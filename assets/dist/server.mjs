@@ -1,8 +1,5 @@
-var SRPServer = /** @class */ (function () {
-    function SRPServer() {
-    }
-    return SRPServer;
-}());
+class SRPServer {
+}
 
 export { SRPServer as default };
 //# sourceMappingURL=server.mjs.map

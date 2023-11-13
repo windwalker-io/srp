@@ -1,7 +1,16 @@
 {
   "compilerOptions": {
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "target": "ES2022"
-  }
+    "noImplicitAny": true,
+    "outDir": "dist/types",
+    "module": "ESNext",
+    "target": "es6",
+    "allowJs": true,
+    "sourceMap": true,
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es2018", "dom"],
+    "moduleResolution": "node",
+  },
+  "include": ["src/*.ts", "node_modules/**/*"],
 }

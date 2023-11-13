@@ -1,3 +1,4 @@
+import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import fs from 'fs';
@@ -68,7 +69,8 @@ function buildConfig(type, umdName) {
     ],
     plugins: [
       nodeResolve(),
-      typescript()
+      typescript(),
+      commonjs(),
     ]
   };
 }

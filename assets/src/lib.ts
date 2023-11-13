@@ -1,9 +1,26 @@
+// import CryptoJS from 'crypto-js';
+import * as Sha1 from 'crypto-js/hmac-sha1.js';
+
+console.log(Sha1);
+
+function randomBytes(size: number) {
+  if (typeof process === 'object' && process.versions && process.versions.node) {
+    const crypto = require('crypto');
+    return crypto.randomBytes(size);
+  } else if (typeof window === 'object' && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint8Array(size);
+    window.crypto.getRandomValues(array);
+    return array;
+  } else {
+    throw new Error('Secure random bytes generation is not supported in this environment.');
+  }
+}
 
 export abstract class AbstractSRPHandler {
   protected algo: string = 'sha256';
-  protected length: number = SRPClient.SECRET_256BIT; // 假设 SECRET_256BIT 是一个静态属性
+  protected length: number = 256 / 8;
 
-  public static bigInteger(num: string | bigint, from: number = 10): bigint {
+  public bigInteger(num: string | bigint, from: number = 10): bigint {
     if (typeof num === 'bigint') {
       return num;
     }
@@ -11,29 +28,29 @@ export abstract class AbstractSRPHandler {
     return BigInt(`0x${num}`);
   }
 
-  public static createFromConfig(config: any): SRPClient {
-    return SRPClient.create(
-      config.prime ?? null,
-      config.generator ?? null,
-      config.key ?? null,
-    );
-  }
-
-  public static create(
-    prime: bigint | string = null,
-    generator: bigint | string = null,
-    key: bigint | string = null
-  ): this {
-    prime ??= SRPClient.DEFAULT_PRIME;
-    generator ??= SRPClient.DEFAULT_GENERATOR;
-    key ??= SRPClient.DEFAULT_KEY;
-
-    return new SRPClient(
-      SRPClient.bigInteger(prime, 16),
-      SRPClient.bigInteger(generator, 16),
-      SRPClient.bigInteger(key, 16),
-    );
-  }
+  // public static createFromConfig(config: any): SRPClient {
+  //   return SRPClient.create(
+  //     config.prime ?? null,
+  //     config.generator ?? null,
+  //     config.key ?? null,
+  //   );
+  // }
+  //
+  // public static create(
+  //   prime: bigint | string = null,
+  //   generator: bigint | string = null,
+  //   key: bigint | string = null
+  // ): this {
+  //   prime ??= SRPClient.DEFAULT_PRIME;
+  //   generator ??= SRPClient.DEFAULT_GENERATOR;
+  //   key ??= SRPClient.DEFAULT_KEY;
+  //
+  //   return new SRPClient(
+  //     SRPClient.bigInteger(prime, 16),
+  //     SRPClient.bigInteger(generator, 16),
+  //     SRPClient.bigInteger(key, 16),
+  //   );
+  // }
 
   constructor(
     protected prime: bigint,
@@ -44,7 +61,7 @@ export abstract class AbstractSRPHandler {
   }
 
   public generateRandomPrivate(): bigint {
-    const hex = crypto.randomBytes(this.getLength()).toString('hex');
+    const hex = randomBytes(this.getLength()).toString('hex');
     return BigInt(`0x${hex}`);
   }
 
@@ -114,10 +131,53 @@ export abstract class AbstractSRPHandler {
     return this.key;
   }
 
-  protected hash(...args: (string | bigint)[]): bigint {
-    // 实现 hash 函数，这里需要根据你的具体需求来实现
-    // 注意：BigInt 和哈希算法的结合可能需要特别处理
-    return BigInt(/* ... */);
+  public hash(...args: (string | bigint)[]): bigint {
+    const binaryArgs = args.map(arg => {
+      if (typeof arg === 'bigint') {
+        return this.bigIntToHex(arg);
+      }
+      return arg;
+    });
+
+    const hashString = this.hashToString(binaryArgs.join(''));
+    return this.bigInteger(hashString, 16);
+  }
+
+  protected hashToString(str: string): string {
+    const algo = this.getAlgo().toLowerCase();
+
+    switch (algo) {
+      case 'sha1':
+        return CryptoJS.SHA1(str).toString(CryptoJS.enc.Hex);
+      case 'sha256':
+        return CryptoJS.SHA256(str).toString(CryptoJS.enc.Hex);
+      case 'sha384':
+        return CryptoJS.SHA384(str).toString(CryptoJS.enc.Hex);
+      case 'sha512':
+        return CryptoJS.SHA512(str).toString(CryptoJS.enc.Hex);
+      case 'blake2s-256':
+        return this.blake(str, 'blake2s', 256);
+      case 'blake2b-224':
+        return this.blake(str, 'blake2b', 224);
+      case 'blake2b-256':
+        return this.blake(str, 'blake2b', 256);
+      case 'blake2b-384':
+        return this.blake(str, 'blake2b', 384);
+      case 'blake2b-512':
+        return this.blake(str, 'blake2b', 512);
+      default:
+        throw new Error(`Unsupported hash algorithm: ${algo}`);
+    }
+  }
+
+  protected blake(str: string, algo: string, size: number): string {
+    // 这里需要实现 Blake2 算法的逻辑，或者使用现有的库
+    // 例如，使用 Node.js 的 crypto 模块或第三方库
+    return ''; // 伪代码
+  }
+
+  private bigIntToHex(bigInt: bigint): string {
+    return bigInt.toString(16);
   }
 
   protected checkNotEmpty(num: any, name: string): void {
@@ -131,7 +191,18 @@ export abstract class AbstractSRPHandler {
   }
 
   protected pad(val: bigint): bigint {
-    // 实现 pad 函数，这里需要根据你的具体需求来实现
-    return BigInt(/* ... */);
+    const primeLength = this.intToBytes(this.getPrime()).length;
+
+    const valStr = val.toString(16);
+
+    const paddedStr = valStr.padStart(primeLength, '0');
+
+    return BigInt('0x' + paddedStr);
+  }
+
+  private intToBytes(val: bigint): string {
+    let hexStr = val.toString(16);
+    hexStr = hexStr.length % 2 ? '0' + hexStr : hexStr;
+    return Buffer.from(hexStr, 'hex').toString();
   }
 }

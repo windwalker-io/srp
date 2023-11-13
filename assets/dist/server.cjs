@@ -1,10 +1,7 @@
 'use strict';
 
-var SRPServer = /** @class */ (function () {
-    function SRPServer() {
-    }
-    return SRPServer;
-}());
+class SRPServer {
+}
 
 module.exports = SRPServer;
 //# sourceMappingURL=server.cjs.map
