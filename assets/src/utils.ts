@@ -49,8 +49,8 @@ export function bt2hex(num: bigint) {
   return hexPadZero(num.toString(16));
 }
 
-export function hex2buffer(hexString: string) {
-  let bytes;
+export function hex2buffer(hexString: string): Uint8Array {
+  let bytes: Uint8Array;
 
   if (typeof window === 'undefined') {
     bytes = Buffer.from(hexString, 'hex');
@@ -61,11 +61,12 @@ export function hex2buffer(hexString: string) {
     // }
   }
 
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  return bytes;
+  // return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 }
 
-export function str2buffer(str: string) {
-  let bytes;
+export function str2buffer(str: string): Uint8Array {
+  let bytes: Uint8Array;
 
   if (typeof window === 'undefined') {
     bytes = Buffer.from(str, 'utf-8');
@@ -74,10 +75,16 @@ export function str2buffer(str: string) {
     bytes = encoder.encode(str);
   }
 
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  return bytes;
 }
 
-export function concatArrayBuffers(...buffers: ArrayBufferLike[]) {
+export function uint8array2hex(ua: Uint8Array) {
+  return Array.from(ua)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+export function concatArrayBuffers(...buffers: Uint8Array[]) {
   let totalLength = buffers.reduce((acc, value) => acc + value.byteLength, 0);
 
   let result = new Uint8Array(totalLength);
@@ -88,35 +95,5 @@ export function concatArrayBuffers(...buffers: ArrayBufferLike[]) {
     length += buffer.byteLength;
   }
 
-  return result.buffer;
+  return result;
 }
-
-// export function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-//   if (exp === 0n) {
-//     return 1n;
-//   }
-//
-//   if (exp % 2n === 0n){
-//     return modPow( base, (exp / 2n), mod) ** 2n % mod;
-//   }
-//   else {
-//     return (base * modPow( base, (exp - 1n), mod)) % mod;
-//   }
-// }
-
-// function modPow(base, exponent, modulus) {
-//   base = BigInt(base);
-//   exponent = BigInt(exponent);
-//   modulus = BigInt(modulus);
-//   if (modulus === BigInt(1)) return BigInt(0);
-//   let result = BigInt(1);
-//   base = base % modulus;
-//   while (exponent > 0) {
-//     if (exponent % BigInt(2) === BigInt(1)) {
-//       result = (result * base) % modulus;
-//     }
-//     exponent = exponent / BigInt(2);
-//     base = (base * base) % modulus;
-//   }
-//   return result;
-// }

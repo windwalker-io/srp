@@ -33,7 +33,6 @@ export default class SRPClient extends AbstractSRPHandler {
 
     let B2 = B - (k * (modPow(g, x, N)));;
 
-    //  $this->divR($this->add($this->divR($a, $b), $b), $b);
     if (B2 < 0n) {
       B2 = N - abs(B2);
 

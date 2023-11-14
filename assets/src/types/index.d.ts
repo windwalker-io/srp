@@ -1,1 +1,1 @@
-export type HasherFunction = (buffer: ArrayBufferLike, length: number) => Promise<string>;
+export type HasherFunction = (buffer: Uint8Array, length: number) => Promise<string|Uint8Array>;

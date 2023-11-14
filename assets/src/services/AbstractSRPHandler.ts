@@ -1,5 +1,5 @@
 import { HasherFunction } from '../types';
-import { bigInteger, bt2hex, concatArrayBuffers, hex2buffer, randomBytes, str2buffer } from '../utils';
+import { bigInteger, bt2hex, concatArrayBuffers, hex2buffer, randomBytes, str2buffer, uint8array2hex } from '../utils';
 
 export default abstract class AbstractSRPHandler {
   protected length: number = 256 / 8;
@@ -93,8 +93,14 @@ export default abstract class AbstractSRPHandler {
     return bigInteger(hashString, 16);
   }
 
-  protected async hashToString(buffer: ArrayBufferLike): Promise<string> {
-    return this.hasher(buffer, this.getLength());
+  protected async hashToString(buffer: Uint8Array): Promise<string> {
+    let hash = await this.hasher(buffer, this.getLength());
+
+    if (hash instanceof Uint8Array) {
+      hash = uint8array2hex(hash);
+    }
+
+    return hash;
   }
 
   protected checkNotEmpty(num: any, name: string): void {
