@@ -1,3 +1,4 @@
+import { blake2s } from 'blakejs';
 import { trimStart } from 'lodash';
 import { HasherFunction } from '../src/types';
 import testData from '../../test/data/test-vectors.json';
@@ -6,7 +7,7 @@ export function hexExpect(a: string, b: string) {
   return expect(trimStart(a, '0')).toBe(trimStart(b, '0'));
 }
 
-const allowHashes = ['sha1', 'sha256', 'sha512'];
+const allowHashes = ['sha1', 'sha256', 'sha512', 'blake2s-256'];
 const allowSizes = [1024];
 
 export function getTestVectors() {
@@ -40,5 +41,7 @@ export async function getHasher(H: string): Promise<HasherFunction> {
       return async (str: ArrayBufferLike) => sha384(str);
     case 'sha512':
       return async (str: ArrayBufferLike) => sha512(str);
+    case 'blake2s-256':
+      return async (str: ArrayBufferLike) => blake2s(str, undefined, 256).toString();
   }
 }
