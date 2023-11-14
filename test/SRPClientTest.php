@@ -39,7 +39,7 @@ class SRPClientTest extends TestCase
         );
         $client->setSize($data['size']);
         $client->setAlgo($data['H']);
-var_dump($data['s'], $client->generateSalt()->toBase(16));
+
         $salt = BigInteger::fromBase($data['s'], 16);
         $identity = $data['I'];
         $password = $data['P'];
