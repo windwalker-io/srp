@@ -7,6 +7,7 @@ namespace Windwalker\SRP;
 use Brick\Math\BigInteger;
 use Brick\Math\BigNumber;
 use Brick\Math\Exception\NumberFormatException;
+use Windwalker\SRP\Exception\InvalidSRPParameterException;
 
 abstract class AbstractSRPHandler
 {
@@ -83,11 +84,12 @@ abstract class AbstractSRPHandler
      * @throws NumberFormatException
      * @throws \Exception
      */
-    public function generateRandomPrivate(): BigInteger
+    public function generateRandomSecret(): BigInteger
     {
-        $hex = bin2hex(random_bytes($this->getLength()));
-
-        return BigInteger::fromBase($hex, 16);
+        return BigInteger::fromBase(
+            bin2hex(random_bytes($this->getLength())),
+            16
+        );
     }
 
     public function getAlgo(): string
@@ -120,20 +122,25 @@ abstract class AbstractSRPHandler
     }
 
     /**
-     * [u] = HASH(PAD(A) | PAD(B))
+     * [u] = H(PAD(A) | PAD(B))
      *
      * @param  BigInteger  $A
      * @param  BigInteger  $B
      *
      * @return  BigInteger
-     * @throws NumberFormatException
      */
     public function generateCommonSecret(BigInteger $A, BigInteger $B): BigInteger
     {
         static::checkNotEmpty($A, 'A');
         static::checkNotEmpty($B, 'B');
 
-        return $this->hash($this->pad($A), $this->pad($B));
+        $u = $this->hash($this->pad($A), $this->pad($B));
+
+        if ($u->isZero()) {
+            throw new InvalidSRPParameterException('The computed [u] value should not be 0.');
+        }
+
+        return $u;
     }
 
     /**
@@ -249,7 +256,7 @@ abstract class AbstractSRPHandler
 
     protected function blake(string $str, string $algo, int $size): string
     {
-        return sodium_bin2hex(sodium_crypto_generichash( $str, '', $size / 8));
+        return sodium_bin2hex(sodium_crypto_generichash($str, '', $size / 8));
     }
 
     protected static function checkNotEmpty(mixed $num, string $name): void

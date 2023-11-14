@@ -46,7 +46,7 @@ export default class SRPClient extends AbstractSRPHandler {
     return modPow(this.getGenerator(), x, this.getPrime());
   }
 
-  public async generatePublic(privateKey: bigint): Promise<bigint> {
-    return modPow(this.getGenerator(), privateKey, this.getPrime());
+  public async generatePublic(secret: bigint): Promise<bigint> {
+    return modPow(this.getGenerator(), secret, this.getPrime());
   }
 }

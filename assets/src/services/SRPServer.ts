@@ -19,11 +19,11 @@ export default class SRPServer extends AbstractSRPHandler {
     );
   }
 
-  public generatePublic(b: bigint, verifier: bigint): bigint {
+  public generatePublic(secret: bigint, verifier: bigint): bigint {
     const N: bigint = this.getPrime();
 
     // ((k*v + g^b) % N)
-    return mod((this.getKey() * verifier) + (modPow(this.getGenerator(), b, N)), N);
+    return mod((this.getKey() * verifier) + (modPow(this.getGenerator(), secret, N)), N);
   }
 
   /**

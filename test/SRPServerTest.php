@@ -9,6 +9,7 @@ use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use Brick\Math\Exception\NumberFormatException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Windwalker\SRP\SRPClient;
 use Windwalker\SRP\SRPServer;
@@ -18,17 +19,7 @@ class SRPServerTest extends TestCase
 {
     use SRPTestTrait;
 
-    /**
-     * @param  array  $data
-     *
-     * @return  void
-     *
-     * @throws DivisionByZeroException
-     * @throws MathException
-     * @throws NegativeNumberException
-     * @throws NumberFormatException
-     * @dataProvider vectorsProvider
-     */
+    #[DataProvider('vectorsProvider')]
     public function testVectors(array $data): void
     {
         $server = SRPServer::create(

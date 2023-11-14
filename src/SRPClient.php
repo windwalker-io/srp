@@ -8,9 +8,79 @@ use Brick\Math\BigInteger;
 use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
+use Windwalker\SRP\Step\PasswordFile;
+use Windwalker\SRP\Step\ProofResult;
 
 class SRPClient extends AbstractSRPHandler
 {
+    public function register(string $identity, string $password): PasswordFile
+    {
+        $salt = $this->generateSalt();
+
+        // (SHA(s | SHA(I | `:` | P)))
+        $x = $this->generatePasswordHash($salt, $identity, $password);
+
+        // (g^x % N)
+        $verifier = $this->generateVerifier($x);
+
+        return new PasswordFile($salt, $verifier);
+    }
+
+    public function deriveSession(
+        string $identity,
+        string $password,
+        BigInteger $salt,
+        BigInteger $B,
+    ): ProofResult {
+        if ($B->mod($this->getPrime())->isZero()) {
+            throw new \RuntimeException('Server may return a invalid public ephemeral.');
+        }
+
+        $a = $this->generateRandomSecret();
+        $A = $this->generatePublic($a);
+
+        // (SHA(s | SHA(I | `:` | P)))
+        $x = $this->generatePasswordHash($salt, $identity, $password);
+
+        $u = $this->generateCommonSecret($A, $B);
+
+        $S = $this->generatePreMasterSecret($a, $B, $x, $u);
+
+        $K = $this->hash($S);
+
+        $M1 = $this->generateClientSessionProof(
+            $identity,
+            $salt,
+            $A,
+            $B,
+            $K
+        );
+
+        return new ProofResult($K, $M1);
+    }
+
+    public function verifyServerSession(BigInteger $A, BigInteger $K, BigInteger $M1, BigInteger $serverM2): bool
+    {
+        // H(A | M | K)
+        $M2 = $this->generateServerSessionProof($A, $M1, $K);
+
+        // Check M2
+        // Use hash_equals() to mitigate timing attack
+        if (!hash_equals((string) $M2, (string) $serverM2)) {
+            throw new \InvalidArgumentException('Invalid server session proof', 401);
+        }
+
+        return true;
+    }
+
+    public function generateSalt(): BigInteger
+    {
+        return BigInteger::fromBase(
+            bin2hex(random_bytes(16)),
+            16
+        );
+    }
+
     /**
      * [X]
      *
@@ -51,12 +121,10 @@ class SRPClient extends AbstractSRPHandler
 
         $B2 = $B->minus($k->multipliedBy($g->modPow($x, $N)));
 
-        if ($B2->isLessThan(0)) {
+        // Handle negative
+        if ($B2->isNegative()) {
             $B2 = $N->minus($B2->abs());
-
-            show($B2->toBase(16), $N->toBase(16));
             $B2 = $B2->mod($N);
-            show($B2->toBase(16));
         }
 
         return $B2->modPow($a->plus($u->multipliedBy($x)), $N);
@@ -84,7 +152,7 @@ class SRPClient extends AbstractSRPHandler
      *
      * (g^a % N)
      *
-     * @param  BigInteger  $private  (a)
+     * @param  BigInteger  $secret  [a]
      *
      * @return  BigInteger [A]
      *
@@ -92,8 +160,8 @@ class SRPClient extends AbstractSRPHandler
      * @throws \Brick\Math\Exception\MathException
      * @throws \Brick\Math\Exception\NegativeNumberException
      */
-    public function generatePublic(BigInteger $private): BigInteger
+    public function generatePublic(BigInteger $secret): BigInteger
     {
-        return $this->getGenerator()->modPow($private, $this->getPrime());
+        return $this->getGenerator()->modPow($secret, $this->getPrime());
     }
 }

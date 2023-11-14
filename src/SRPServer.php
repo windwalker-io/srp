@@ -9,50 +9,11 @@ use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use Brick\Math\Exception\NumberFormatException;
+use Windwalker\SRP\Step\EphemeralResult;
+use Windwalker\SRP\Step\ProofResult;
 
 class SRPServer extends AbstractSRPHandler
 {
-    protected string $identity;
-
-    protected BigInteger $verifier;
-
-    protected BigInteger $salt;
-    //
-    // /**
-    //  * Server private key
-    //  *
-    //  * @var BigInteger
-    //  */
-    // protected BigInteger $b;
-    //
-    // /**
-    //  * Server public key
-    //  *
-    //  * @var BigInteger
-    //  */
-    // protected BigInteger $B;
-    //
-    // /**
-    //  * Constant computed by the server.
-    //  *
-    //  * @var BigInteger
-    //  */
-    // protected BigInteger $k;
-    //
-    // /**
-    //  * Shared secret key
-    //  *
-    //  * @var BigInteger
-    //  */
-    // protected BigInteger $K;
-
-    // /**
-    //  * Shared secret hashed form
-    //  *
-    //  * @var string
-    //  */
-    // protected string $S;
-
     protected int $step = 1;
 
     /**
@@ -61,55 +22,64 @@ class SRPServer extends AbstractSRPHandler
      * @throws MathException
      * @throws NumberFormatException
      */
-    public function step1(string $identity, BigInteger $salt, BigInteger $verifier): BigInteger
+    public function step1(string $identity, BigInteger $salt, BigInteger $verifier): EphemeralResult
     {
         static::checkNotEmpty($identity, 'identity');
         static::checkNotEmpty($salt, 'salt');
         static::checkNotEmpty($verifier, 'verifier');
 
-        $this->identity = $identity;
-        $this->verifier = $verifier;
-        $this->salt = $salt;
+        // random()
+        $b = $this->generateRandomSecret();
 
-        $b = $this->generateRandomPrivate($this->getLength());
+        // ((k*v + g^b) % N)
         $B = $this->generatePublic($b, $verifier);
 
         $this->step = 1;
 
-        return $B;
+        return new EphemeralResult($b, $B);
     }
 
+    /**
+     * @throws DivisionByZeroException
+     * @throws NegativeNumberException
+     * @throws MathException
+     */
     public function step2(
         string $identity,
         BigInteger $salt,
         BigInteger $verifier,
         BigInteger $A,
         BigInteger $b,
-        BigInteger $M1
-    ) {
+        BigInteger $clientM1
+    ): ProofResult {
         static::checkNotEmpty($A, 'A');
-        static::checkNotEmpty($M1, 'M1');
+        static::checkNotEmpty($clientM1, 'M1');
 
+        // ((k*v + g^b) % N)
         $B = $this->generatePublic($b, $verifier);
 
+        // H(PAD(A) | PAD(B))
         $u = $this->generateCommonSecret($A, $B);
 
+        // ((A * v^u) ^ b % N)
         $S = $this->generatePreMasterSecret($A, $b, $verifier, $u);
 
         // K = H(S)
         $K = $this->hash($S);
 
         // M = H(H(N) xor H(g), H(I), s, A, B, K)
-        $M2 = $this->generateClientSessionProof($identity, $salt, $A, $B, $K);
+        $M1 = $this->generateClientSessionProof($identity, $salt, $A, $B, $K);
 
-        if (!hash_equals((string) $M2, (string) $M1)) {
+        // Check M1
+        // Use hash_equals() to mitigate timing attack
+        if (!hash_equals((string) $M1, (string) $clientM1)) {
             throw new \InvalidArgumentException('Invalid client session proof', 401);
         }
 
-        $proof = $this->hash($A, $M2, $K);
-        $key = $K;
+        // H(A | M | K)
+        $proof = $this->generateServerSessionProof($A, $M1, $K);
 
-        return compact('key', 'proof');
+        return new ProofResult($K, $proof);
     }
 
     /**
@@ -117,7 +87,7 @@ class SRPServer extends AbstractSRPHandler
      *
      * ((k*v + g^b) % N)
      *
-     * @param  BigInteger  $private  (b)
+     * @param  BigInteger  $secret  [b]
      *
      * @return  BigInteger [B]
      *
@@ -125,15 +95,19 @@ class SRPServer extends AbstractSRPHandler
      * @throws \Brick\Math\Exception\MathException
      * @throws \Brick\Math\Exception\NegativeNumberException
      */
-    public function generatePublic(BigInteger $private, BigInteger $verifier): BigInteger
+    public function generatePublic(BigInteger $secret, BigInteger $verifier): BigInteger
     {
         return $this->getKey()
             ->multipliedBy($verifier)
-            ->plus($this->getGenerator()->modPow($private, $this->getPrime()))
+            ->plus($this->getGenerator()->modPow($secret, $this->getPrime()))
             ->mod($this->getPrime());
     }
 
     /**
+     * PreMaster Secret [S]
+     *
+     * ((A * v^u) ^ b % N)
+     *
      * @throws DivisionByZeroException
      * @throws NegativeNumberException
      * @throws MathException

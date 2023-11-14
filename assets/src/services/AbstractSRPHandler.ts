@@ -18,7 +18,7 @@ export default abstract class AbstractSRPHandler {
     return this;
   }
 
-  public async generateRandomPrivate(): Promise<bigint> {
+  public async generateRandomSecret(): Promise<bigint> {
     const hex = randomBytes(this.getLength()).toString('hex');
     return BigInt(`0x${hex}`);
   }
