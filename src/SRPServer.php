@@ -17,41 +17,41 @@ class SRPServer extends AbstractSRPHandler
     protected BigInteger $verifier;
 
     protected BigInteger $salt;
+    //
+    // /**
+    //  * Server private key
+    //  *
+    //  * @var BigInteger
+    //  */
+    // protected BigInteger $b;
+    //
+    // /**
+    //  * Server public key
+    //  *
+    //  * @var BigInteger
+    //  */
+    // protected BigInteger $B;
+    //
+    // /**
+    //  * Constant computed by the server.
+    //  *
+    //  * @var BigInteger
+    //  */
+    // protected BigInteger $k;
+    //
+    // /**
+    //  * Shared secret key
+    //  *
+    //  * @var BigInteger
+    //  */
+    // protected BigInteger $K;
 
-    /**
-     * Server private key
-     *
-     * @var BigInteger
-     */
-    protected BigInteger $b;
-
-    /**
-     * Server public key
-     *
-     * @var BigInteger
-     */
-    protected BigInteger $B;
-
-    /**
-     * Constant computed by the server.
-     *
-     * @var BigInteger
-     */
-    protected BigInteger $k;
-
-    /**
-     * Shared secret key
-     *
-     * @var BigInteger
-     */
-    protected BigInteger $K;
-
-    /**
-     * Shared secret hashed form
-     *
-     * @var string
-     */
-    protected string $S;
+    // /**
+    //  * Shared secret hashed form
+    //  *
+    //  * @var string
+    //  */
+    // protected string $S;
 
     protected int $step = 1;
 

@@ -119,7 +119,9 @@ export default abstract class AbstractSRPHandler {
 
   private intToBytes(val: bigint): string {
     let hexStr = val.toString(16);
+
     hexStr = hexStr.length % 2 ? '0' + hexStr : hexStr;
+
     return Buffer.from(hexStr, 'hex').toString();
   }
 }

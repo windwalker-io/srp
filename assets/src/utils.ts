@@ -91,18 +91,18 @@ export function concatArrayBuffers(...buffers: ArrayBufferLike[]) {
   return result.buffer;
 }
 
-export function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-  if (exp === 0n) {
-    return 1n;
-  }
-
-  if (exp % 2n === 0n){
-    return modPow( base, (exp / 2n), mod) ** 2n % mod;
-  }
-  else {
-    return (base * modPow( base, (exp - 1n), mod)) % mod;
-  }
-}
+// export function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
+//   if (exp === 0n) {
+//     return 1n;
+//   }
+//
+//   if (exp % 2n === 0n){
+//     return modPow( base, (exp / 2n), mod) ** 2n % mod;
+//   }
+//   else {
+//     return (base * modPow( base, (exp - 1n), mod)) % mod;
+//   }
+// }
 
 // function modPow(base, exponent, modulus) {
 //   base = BigInt(base);

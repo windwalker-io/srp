@@ -1,4 +1,5 @@
-import { bigInteger, DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME, modPow } from '../utils';
+import { abs, mod, modPow } from '../math';
+import { bigInteger, DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
 import AbstractSRPHandler from './AbstractSRPHandler';
 
 export default class SRPClient extends AbstractSRPHandler {
@@ -30,14 +31,16 @@ export default class SRPClient extends AbstractSRPHandler {
     const g = this.getGenerator();
     const k = this.getKey();
 
-    let B2 = B - (k * (g ** x % N));
+    let B2 = B - (k * (modPow(g, x, N)));;
 
+    //  $this->divR($this->add($this->divR($a, $b), $b), $b);
     if (B2 < 0n) {
-      B2 = N - BigInt(Math.abs(Number(B2)));
-      B2 = B2 % N;
+      B2 = N - abs(B2);
+
+      B2 = mod(B2, N);
     }
 
-    return (B2 ** (a + (u * x))) % N;
+    return modPow(B2, (a + (u * x)), N);
   }
 
   public async generateVerifier(x: bigint): Promise<bigint> {
@@ -45,6 +48,6 @@ export default class SRPClient extends AbstractSRPHandler {
   }
 
   public async generatePublic(privateKey: bigint): Promise<bigint> {
-    return (this.getGenerator() ** privateKey) % this.getPrime();
+    return modPow(this.getGenerator(), privateKey, this.getPrime());
   }
 }

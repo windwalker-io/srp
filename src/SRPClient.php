@@ -54,7 +54,9 @@ class SRPClient extends AbstractSRPHandler
         if ($B2->isLessThan(0)) {
             $B2 = $N->minus($B2->abs());
 
+            show($B2->toBase(16), $N->toBase(16));
             $B2 = $B2->mod($N);
+            show($B2->toBase(16));
         }
 
         return $B2->modPow($a->plus($u->multipliedBy($x)), $N);
