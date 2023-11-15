@@ -22,8 +22,8 @@ describe('SRPServerTest', () => {
     const b = BigInt('0x' + data.b);
 
     // Assuming server.generatePublic, server.generatePreMasterSecret, and server.hash are defined and updated to use bigint
-    const B = server.generatePublic(b, v);
-    const S = server.generatePreMasterSecret(A, b, v, u);
+    const B = await server.generatePublic(b, v);
+    const S = await server.generatePreMasterSecret(A, b, v, u);
     const K = await server.hash(S);
     const M1 = await server.generateClientSessionProof(identity, salt, A, B, K);
     const M2 = await server.generateServerSessionProof(A, M1, K);

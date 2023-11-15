@@ -1,5 +1,5 @@
-import { abs, mod, modPow } from '../math';
-import { bigInteger, DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
+import { abs, mod, modPow, toBigInt } from 'bigint-toolkit';
+import { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
 import AbstractSRPHandler from './AbstractSRPHandler';
 
 export default class SRPClient extends AbstractSRPHandler {
@@ -13,9 +13,9 @@ export default class SRPClient extends AbstractSRPHandler {
     key ??= DEFAULT_KEY;
 
     return new this(
-      bigInteger(prime, 16),
-      bigInteger(generator, 16),
-      bigInteger(key, 16),
+      toBigInt(prime, 16),
+      toBigInt(generator, 16),
+      toBigInt(key, 16),
     );
   }
 

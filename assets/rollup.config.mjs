@@ -16,7 +16,7 @@ export default [
   {
     input: 'src/srp.ts',
     output: {
-      file: 'types/srp.d.ts',
+      file: 'dist/index.d.ts',
       format: 'es',
     },
     plugins: [
@@ -41,7 +41,7 @@ function buildConfig(type, umdName) {
         name: umdName,
       },
       {
-        file: `dist/${type}.mjs`,
+        file: `dist/${type}.es.js`,
         format: 'esm',
         sourcemap: true,
       },
@@ -57,7 +57,7 @@ function buildConfig(type, umdName) {
             ]
           },
           {
-            file: addMinToFilename(`dist/${type}.mjs`),
+            file: addMinToFilename(`dist/${type}.es.js`),
             format: 'es',
             sourcemap: true,
             plugins: [

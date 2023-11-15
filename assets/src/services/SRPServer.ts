@@ -1,5 +1,5 @@
-import { mod, modPow } from '../math';
-import { bigInteger, DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
+import { mod, modPow, toBigInt } from 'bigint-toolkit';
+import { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
 import AbstractSRPHandler from './AbstractSRPHandler';
 
 export default class SRPServer extends AbstractSRPHandler {
@@ -13,13 +13,13 @@ export default class SRPServer extends AbstractSRPHandler {
     key ??= DEFAULT_KEY;
 
     return new this(
-      bigInteger(prime, 16),
-      bigInteger(generator, 16),
-      bigInteger(key, 16),
+      toBigInt(prime, 16),
+      toBigInt(generator, 16),
+      toBigInt(key, 16),
     );
   }
 
-  public generatePublic(secret: bigint, verifier: bigint): bigint {
+  public async generatePublic(secret: bigint, verifier: bigint): Promise<bigint> {
     const N: bigint = this.getPrime();
 
     // ((k*v + g^b) % N)
@@ -35,12 +35,12 @@ export default class SRPServer extends AbstractSRPHandler {
    * @param u - bigint
    * @returns bigint
    */
-  public generatePreMasterSecret(
+  public async generatePreMasterSecret(
     A: bigint,
     b: bigint,
     verifier: bigint,
     u: bigint
-  ): bigint {
+  ): Promise<bigint> {
     const N: bigint = this.getPrime();
 
     return modPow(modPow(verifier, u, N) * A, b, N);
