@@ -4,16 +4,20 @@ export const DEFAULT_PRIME = 217661744586174357731910088918027537819076683742555
 export const DEFAULT_GENERATOR = 2n;
 export const DEFAULT_KEY = toBigint('5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300', 16);
 
-export function hexPadZero(hex: string): string {
-  if (hex.length % 2 === 0) {
-    return hex;
-  }
+// export function hexPadZero(hex: string): string {
+//   if (hex.length % 2 === 0) {
+//     return hex;
+//   }
+//
+//   return '0' + hex;
+// }
+//
+// export function bt2hex(num: bigint) {
+//   return hexPadZero(num.toString(16));
+// }
 
-  return '0' + hex;
-}
-
-export function bt2hex(num: bigint) {
-  return hexPadZero(num.toString(16));
+export function isNode() {
+  return typeof window === 'undefined';
 }
 
 export function str2buffer(str: string): Uint8Array {

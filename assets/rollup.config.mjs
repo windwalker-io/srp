@@ -49,7 +49,7 @@ function buildConfig(type, umdName) {
         ? [
           {
             file: addMinToFilename(`dist/${type}.js`),
-            format: 'esm',
+            format: 'umd',
             sourcemap: true,
             name: umdName,
             plugins: [

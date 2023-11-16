@@ -9,13 +9,12 @@ use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use Brick\Math\Exception\NumberFormatException;
+use Windwalker\SRP\Exception\InvalidSessionProofException;
 use Windwalker\SRP\Step\EphemeralResult;
 use Windwalker\SRP\Step\ProofResult;
 
 class SRPServer extends AbstractSRPHandler
 {
-    protected int $step = 1;
-
     /**
      * @throws DivisionByZeroException
      * @throws NegativeNumberException
@@ -33,8 +32,6 @@ class SRPServer extends AbstractSRPHandler
 
         // ((k*v + g^b) % N)
         $B = $this->generatePublic($b, $verifier);
-
-        $this->step = 1;
 
         return new EphemeralResult($b, $B);
     }
@@ -73,7 +70,7 @@ class SRPServer extends AbstractSRPHandler
         // Check M1
         // Use hash_equals() to mitigate timing attack
         if (!hash_equals((string) $M1, (string) $clientM1)) {
-            throw new \InvalidArgumentException('Invalid client session proof', 401);
+            throw new InvalidSessionProofException('Invalid client session proof', 401);
         }
 
         // H(A | M | K)

@@ -8,6 +8,8 @@ use Brick\Math\BigInteger;
 use Brick\Math\Exception\DivisionByZeroException;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
+use Windwalker\SRP\Exception\InvalidSessionProofException;
+use Windwalker\SRP\Step\EphemeralResult;
 use Windwalker\SRP\Step\PasswordFile;
 use Windwalker\SRP\Step\ProofResult;
 
@@ -26,21 +28,30 @@ class SRPClient extends AbstractSRPHandler
         return new PasswordFile($salt, $verifier);
     }
 
-    public function deriveSession(
+    public function step1(
         string $identity,
         string $password,
         BigInteger $salt,
-        BigInteger $B,
     ): ProofResult {
-        if ($B->mod($this->getPrime())->isZero()) {
-            throw new \RuntimeException('Server may return a invalid public ephemeral.');
-        }
-
         $a = $this->generateRandomSecret();
         $A = $this->generatePublic($a);
 
         // (SHA(s | SHA(I | `:` | P)))
         $x = $this->generatePasswordHash($salt, $identity, $password);
+
+        return new EphemeralResult($K, $M1, $x);
+    }
+
+    public function deriveSession(
+        string $identity,
+        BigInteger $salt,
+        BigInteger $A,
+        BigInteger $B,
+        BigInteger $x,
+    ): ProofResult {
+        if ($B->mod($this->getPrime())->isZero()) {
+            throw new \RuntimeException('Server may return a invalid public ephemeral.');
+        }
 
         $u = $this->generateCommonSecret($A, $B);
 
@@ -59,6 +70,13 @@ class SRPClient extends AbstractSRPHandler
         return new ProofResult($K, $M1);
     }
 
+    public function step3(BigInteger $A, BigInteger $K, BigInteger $M1, BigInteger $serverM2): void
+    {
+        if (!$this->verifyServerSession($A, $K, $M1, $serverM2)) {
+            throw new InvalidSessionProofException('Invalid server session proof');
+        }
+    }
+
     public function verifyServerSession(BigInteger $A, BigInteger $K, BigInteger $M1, BigInteger $serverM2): bool
     {
         // H(A | M | K)
@@ -66,11 +84,7 @@ class SRPClient extends AbstractSRPHandler
 
         // Check M2
         // Use hash_equals() to mitigate timing attack
-        if (!hash_equals((string) $M2, (string) $serverM2)) {
-            throw new \InvalidArgumentException('Invalid server session proof', 401);
-        }
-
-        return true;
+        return hash_equals((string) $M2, (string) $serverM2);
     }
 
     public function generateSalt(): BigInteger

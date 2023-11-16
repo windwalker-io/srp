@@ -1,13 +1,13 @@
-type HasherFunction = (buffer: Uint8Array, length: number) => Promise<string|Uint8Array>;
+type HasherFunction = (data: Uint8Array, length: number) => Promise<string|Uint8Array>;
 
 declare abstract class AbstractSRPHandler {
     protected prime: bigint;
     protected generator: bigint;
     protected key: bigint;
     protected length: number;
-    protected hasher: HasherFunction;
+    protected hasher: string | HasherFunction;
     constructor(prime: bigint, generator: bigint, key: bigint);
-    setHasher(handler: HasherFunction): this;
+    setHasher(handler: string | HasherFunction): this;
     generateRandomSecret(): Promise<bigint>;
     getLength(): number;
     setLength(length: number): this;
@@ -20,6 +20,7 @@ declare abstract class AbstractSRPHandler {
     getKey(): bigint;
     hash(...args: (string | bigint)[]): Promise<bigint>;
     protected hashToString(buffer: Uint8Array): Promise<string>;
+    private getHasherByName;
     protected checkNotEmpty(num: any, name: string): void;
     protected pad(val: bigint): bigint;
     private intToBytes;

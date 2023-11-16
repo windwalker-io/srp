@@ -10,7 +10,8 @@ class EphemeralResult
 {
     public function __construct(
         public readonly BigInteger $secret,
-        public readonly BigInteger $public
+        public readonly BigInteger $public,
+        public readonly ?BigInteger $hash = null,
     ) {
     }
 

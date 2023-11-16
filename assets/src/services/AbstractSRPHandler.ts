@@ -2,12 +2,13 @@ import {
   bigintToUint8,
   randomBytes, toBigint, uint8ToBigint, uint8ToHex
 } from 'bigint-toolkit';
+import { createHash } from 'crypto';
 import { HasherFunction } from '../types';
-import { concatArrayBuffers, str2buffer } from '../utils';
+import { concatArrayBuffers, isNode, str2buffer } from '../utils';
 
 export default abstract class AbstractSRPHandler {
   protected length: number = 256 / 8;
-  protected hasher: HasherFunction;
+  protected hasher: string|HasherFunction;
 
   constructor(
     protected prime: bigint,
@@ -17,7 +18,7 @@ export default abstract class AbstractSRPHandler {
     // ...
   }
 
-  setHasher(handler: HasherFunction) {
+  setHasher(handler: string|HasherFunction) {
     this.hasher = handler;
     return this;
   }
@@ -97,13 +98,49 @@ export default abstract class AbstractSRPHandler {
   }
 
   protected async hashToString(buffer: Uint8Array): Promise<string> {
-    let hash = await this.hasher(buffer, this.getLength());
+    let func = this.hasher;
+
+    if (typeof func === 'string') {
+      func = this.getHasherByName(func);
+    }
+    
+    let hash = await func(buffer, this.getLength());
 
     if (hash instanceof Uint8Array) {
       hash = uint8ToHex(hash);
     }
 
     return hash;
+  }
+
+  private getHasherByName(hasher: string): HasherFunction {
+    hasher = hasher.toLowerCase();
+
+    return async (buffer) => {
+      if (isNode()) {
+        const { createHash } = require('crypto');
+
+        return new Uint8Array(
+          Buffer.from(
+            createHash(hasher).update(Buffer.from(buffer)).digest('hex'),
+            'hex'
+          )
+        );
+      }
+
+      switch (hasher) {
+        case 'sha1':
+          return new Uint8Array(await crypto.subtle.digest("SHA-1", buffer));
+        case 'sha256':
+          return new Uint8Array(await crypto.subtle.digest("SHA-256", buffer));
+        case 'sha384':
+          return new Uint8Array(await crypto.subtle.digest("SHA-384", buffer));
+        case 'sha512':
+          return new Uint8Array(await crypto.subtle.digest("SHA-512", buffer));
+      }
+
+      throw new Error('Available hasher not found.');
+    };
   }
 
   protected checkNotEmpty(num: any, name: string): void {

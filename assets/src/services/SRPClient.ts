@@ -29,6 +29,58 @@ export default class SRPClient extends AbstractSRPHandler {
     return { salt, verifier };
   }
 
+  public async step1(
+    identity: string,
+    password: string,
+    salt: bigint
+  ) {
+    // Step 1
+    const a = await this.generateRandomSecret();
+    const A = await this.generatePublic(a);
+    const x = await this.generatePasswordHash(salt, identity, password);
+
+    return {
+      secret: a,
+      public: A,
+      hash: x,
+    };
+  }
+
+  public async step2(
+    identity: string,
+    salt: bigint,
+    A: bigint,
+    B: bigint,
+    x: bigint,
+  ) {
+    if (B % this.getPrime() === 0n) {
+      throw new Error('Server may return a invalid public ephemeral.');
+    }
+
+    // Step 2
+    const u = await this.generateCommonSecret(A, B);
+    const S = await this.generatePreMasterSecret(a, B, x, u);
+    const K = await this.hash(S);
+    const M1 = await this.generateClientSessionProof(identity, salt, A, B, K);
+
+    return {
+      key: K,
+      proof: M1
+    };
+  }
+
+  public step3(A: bigint, K: bigint, M1: bigint, serverM2: bigint) {
+    if (!this.verifyServerSession(A, K, M1, serverM2)) {
+      throw new Error('Invalid server session proof.');
+    }
+  }
+
+  public verifyServerSession(A: bigint, K: bigint, M1: bigint, serverM2: bigint) {
+    const M2 = await client.generateServerSessionProof(A, M1, K);
+
+    return M2 !== hexToBigint(proof);
+  }
+
   public async generateSalt() {
     return uint8ToBigint(randomBytes(16));
   }

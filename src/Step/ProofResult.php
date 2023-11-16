@@ -10,7 +10,7 @@ class ProofResult
 {
     public function __construct(
         public readonly BigInteger $key,
-        public readonly BigInteger $proof
+        public readonly BigInteger $proof,
     ) {
     }
 }
