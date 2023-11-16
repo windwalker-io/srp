@@ -1,4 +1,4 @@
-import { mod, modPow, toBigInt } from 'bigint-toolkit';
+import { mod, modPow, toBigint } from 'bigint-toolkit';
 import { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
 import AbstractSRPHandler from './AbstractSRPHandler';
 
@@ -13,13 +13,13 @@ export default class SRPServer extends AbstractSRPHandler {
     key ??= DEFAULT_KEY;
 
     return new this(
-      toBigInt(prime, 16),
-      toBigInt(generator, 16),
-      toBigInt(key, 16),
+      toBigint(prime, 16),
+      toBigint(generator, 16),
+      toBigint(key, 16),
     );
   }
 
-  public async generatePublic(secret: bigint, verifier: bigint): Promise<bigint> {
+  public generatePublic(secret: bigint, verifier: bigint): bigint {
     const N: bigint = this.getPrime();
 
     // ((k*v + g^b) % N)
@@ -35,12 +35,12 @@ export default class SRPServer extends AbstractSRPHandler {
    * @param u - bigint
    * @returns bigint
    */
-  public async generatePreMasterSecret(
+  public generatePreMasterSecret(
     A: bigint,
     b: bigint,
     verifier: bigint,
     u: bigint
-  ): Promise<bigint> {
+  ): bigint {
     const N: bigint = this.getPrime();
 
     return modPow(modPow(verifier, u, N) * A, b, N);

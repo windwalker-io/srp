@@ -1,4 +1,7 @@
-import { bigInt2Uint8Array, randomBytes, toBigInt, uint8Array2Hex } from 'bigint-toolkit';
+import {
+  bigintToUint8,
+  randomBytes, toBigint, uint8ToBigint, uint8ToHex
+} from 'bigint-toolkit';
 import { HasherFunction } from '../types';
 import { concatArrayBuffers, str2buffer } from '../utils';
 
@@ -20,8 +23,7 @@ export default abstract class AbstractSRPHandler {
   }
 
   public async generateRandomSecret(): Promise<bigint> {
-    const hex = uint8Array2Hex(randomBytes(this.getLength()));
-    return BigInt(`0x${hex}`);
+    return uint8ToBigint(randomBytes(this.getLength()));
   }
 
   public getLength(): number {
@@ -84,21 +86,21 @@ export default abstract class AbstractSRPHandler {
   public async hash(...args: (string | bigint)[]): Promise<bigint> {
     const binaryArgs = args.map(arg => {
       if (typeof arg === 'bigint') {
-        return bigInt2Uint8Array(arg);
+        return bigintToUint8(arg);
       }
       return str2buffer(arg);
     });
 
     const hashString = await this.hashToString(concatArrayBuffers(...binaryArgs));
 
-    return toBigInt(hashString, 16);
+    return toBigint(hashString, 16);
   }
 
   protected async hashToString(buffer: Uint8Array): Promise<string> {
     let hash = await this.hasher(buffer, this.getLength());
 
     if (hash instanceof Uint8Array) {
-      hash = uint8Array2Hex(hash, true);
+      hash = uint8ToHex(hash);
     }
 
     return hash;
