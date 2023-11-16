@@ -1,4 +1,4 @@
-import { abs, mod, modPow, toBigint } from 'bigint-toolkit';
+import { abs, mod, modPow, randomBytes, toBigint, uint8ToBigint } from 'bigint-toolkit';
 import { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
 import AbstractSRPHandler from './AbstractSRPHandler';
 
@@ -17,6 +17,20 @@ export default class SRPClient extends AbstractSRPHandler {
       toBigint(generator, 16),
       toBigint(key, 16),
     );
+  }
+
+  public async register(identity: string, password: string) {
+    const salt = await this.generateSalt();
+
+    const x = await this.generatePasswordHash(salt, identity, password);
+
+    const verifier = await this.generateVerifier(x);
+
+    return { salt, verifier };
+  }
+
+  public async generateSalt() {
+    return uint8ToBigint(randomBytes(16));
   }
 
   public async generatePasswordHash(salt: bigint, identity: string, password: string): Promise<bigint> {
