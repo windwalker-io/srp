@@ -25,7 +25,7 @@
     "@rollup/plugin-typescript": "^11.1.2",
     "@types/jest": "^29.5.8",
     "@types/lodash-es": "^4.17.11",
-    "bigint-toolkit": "^0.1.0",
+    "bigint-toolkit": "^0.2.0",
     "blakejs": "^1.2.1",
     "cross-env": "^7.0.3",
     "crypto-hash": "^2.0",
