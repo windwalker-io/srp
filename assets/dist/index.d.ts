@@ -11,7 +11,7 @@ declare abstract class AbstractSRPHandler {
     generateRandomSecret(): Promise<bigint>;
     getLength(): number;
     setLength(length: number): this;
-    setSize(length: number): this;
+    setSize(size: number): this;
     generateCommonSecret(A: bigint, B: bigint): Promise<bigint>;
     generateClientSessionProof(identity: string, salt: bigint, A: bigint, B: bigint, K: bigint): Promise<bigint>;
     generateServerSessionProof(A: bigint, M: bigint, K: bigint): Promise<bigint>;

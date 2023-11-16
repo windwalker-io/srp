@@ -28,7 +28,7 @@ abstract class AbstractSRPHandler
 
     protected const DEFAULT_KEY = '5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300';
 
-    protected string $algo = 'sha256';
+    protected string|\Closure $hasher = 'sha256';
 
     protected int $length = self::SECRET_256BIT;
 
@@ -43,11 +43,21 @@ abstract class AbstractSRPHandler
 
     public static function createFromConfig(array $config): static
     {
-        return static::create(
+        $handler = static::create(
             $config['prime'] ?? null,
             $config['generator'] ?? null,
             $config['key'] ?? null,
         );
+
+        if ($config['hasher'] ?? null) {
+            $handler->setHasher($config['hasher']);
+        }
+
+        if ($config['size'] ?? null) {
+            $handler->setSize($config['size']);
+        }
+
+        return $handler;
     }
 
     public static function create(
@@ -92,14 +102,14 @@ abstract class AbstractSRPHandler
         );
     }
 
-    public function getAlgo(): string
+    public function getHasher(): string
     {
-        return $this->algo;
+        return $this->hasher;
     }
 
-    public function setAlgo(string $algo): static
+    public function setHasher(string|\Closure $hasher): static
     {
-        $this->algo = $algo;
+        $this->hasher = $hasher;
 
         return $this;
     }
@@ -242,10 +252,18 @@ abstract class AbstractSRPHandler
 
     protected function hashToString(\Stringable|string $str): string
     {
-        $algo = strtolower($this->getAlgo());
+        $hasher = $this->getHasher();
+
+        $str = (string) $str;
+
+        if ($hasher instanceof \Closure) {
+            return (string) $hasher($str);
+        }
+
+        $algo = strtolower($hasher);
 
         return match ($algo) {
-            'sha1', 'sha256', 'sha384', 'sha512' => hash($algo, (string) $str),
+            'sha1', 'sha256', 'sha384', 'sha512' => hash($algo, $str),
             'blake2s-256' => $this->blake($str, 'blake2s', 256),
             'blake2b-224' => $this->blake($str, 'blake2b', 224),
             'blake2b-256' => $this->blake($str, 'blake2b', 256),

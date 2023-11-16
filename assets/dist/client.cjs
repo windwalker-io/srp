@@ -340,8 +340,8 @@ class AbstractSRPHandler {
         this.length = length;
         return this;
     }
-    setSize(length) {
-        return this.setLength(Math.floor(length / 8));
+    setSize(size) {
+        return this.setLength(Math.floor(size / 8));
     }
     async generateCommonSecret(A, B) {
         this.checkNotEmpty(A, 'A');
@@ -396,9 +396,8 @@ class AbstractSRPHandler {
         return BigInt('0x' + paddedStr);
     }
     intToBytes(val) {
-        let hexStr = val.toString(16);
-        hexStr = hexStr.length % 2 ? '0' + hexStr : hexStr;
-        return Buffer.from(hexStr, 'hex').toString();
+        const decoder = new TextDecoder();
+        return decoder.decode(bigintToUint8(val));
     }
 }
 
