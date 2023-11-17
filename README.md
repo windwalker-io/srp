@@ -207,6 +207,5 @@ unnecessarily to avoid security breaches.
 
 ## Login
 
-![Login](https://github.com/windwalker-io/srp/assets/1639206/0061392d-6369-42bd-b210-f79a098d445a)
-
+![Login](https://github.com/windwalker-io/srp/assets/1639206/a01b4d82-2c28-4d95-8615-dca38408c2d5)
 
