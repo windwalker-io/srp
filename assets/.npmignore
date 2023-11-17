@@ -3,7 +3,6 @@
 .editorconfig
 jest.config.js
 yarn.lock
-README.md
 /docs
 /tests
 /rollup.config.mjs
