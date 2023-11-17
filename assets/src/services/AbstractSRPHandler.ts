@@ -2,9 +2,8 @@ import {
   bigintToUint8,
   randomBytes, toBigint, uint8ToBigint, uint8ToHex
 } from 'bigint-toolkit';
-import { createHash } from 'crypto';
 import { HasherFunction } from '../types';
-import { concatArrayBuffers, isNode, str2buffer } from '../utils';
+import { concatArrayBuffers, isNode, str2buffer, timingSafeEquals } from '../utils';
 
 export default abstract class AbstractSRPHandler {
   protected length: number = 256 / 8;
@@ -166,5 +165,9 @@ export default abstract class AbstractSRPHandler {
   private intToBytes(val: bigint): string {
     const decoder = new TextDecoder();
     return decoder.decode(bigintToUint8(val));
+  }
+
+  protected timingSafeEquals(a: string, b: string) {
+    return timingSafeEquals(a, b);
   }
 }

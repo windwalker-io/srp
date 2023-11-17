@@ -50,6 +50,7 @@ export default class SRPClient extends AbstractSRPHandler {
     identity: string,
     salt: bigint,
     A: bigint,
+    a: bigint,
     B: bigint,
     x: bigint,
   ) {
@@ -69,16 +70,16 @@ export default class SRPClient extends AbstractSRPHandler {
     };
   }
 
-  public step3(A: bigint, K: bigint, M1: bigint, serverM2: bigint) {
-    if (!this.verifyServerSession(A, K, M1, serverM2)) {
+  public async step3(A: bigint, K: bigint, M1: bigint, serverM2: bigint) {
+    if (!await this.verifyServerSession(A, K, M1, serverM2)) {
       throw new Error('Invalid server session proof.');
     }
   }
 
-  public verifyServerSession(A: bigint, K: bigint, M1: bigint, serverM2: bigint) {
-    const M2 = await client.generateServerSessionProof(A, M1, K);
+  public async verifyServerSession(A: bigint, K: bigint, M1: bigint, serverM2: bigint) {
+    const M2 = await this.generateServerSessionProof(A, M1, K);
 
-    return M2 !== hexToBigint(proof);
+    return this.timingSafeEquals(M2.toString(), serverM2.toString());
   }
 
   public async generateSalt() {

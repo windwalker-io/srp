@@ -24,6 +24,7 @@ declare abstract class AbstractSRPHandler {
     protected checkNotEmpty(num: any, name: string): void;
     protected pad(val: bigint): bigint;
     private intToBytes;
+    protected timingSafeEquals(a: string, b: string): any;
 }
 
 declare class SRPClient extends AbstractSRPHandler {
@@ -32,6 +33,17 @@ declare class SRPClient extends AbstractSRPHandler {
         salt: bigint;
         verifier: bigint;
     }>;
+    step1(identity: string, password: string, salt: bigint): Promise<{
+        secret: bigint;
+        public: bigint;
+        hash: bigint;
+    }>;
+    step2(identity: string, salt: bigint, A: bigint, a: bigint, B: bigint, x: bigint): Promise<{
+        key: bigint;
+        proof: bigint;
+    }>;
+    step3(A: bigint, K: bigint, M1: bigint, serverM2: bigint): Promise<void>;
+    verifyServerSession(A: bigint, K: bigint, M1: bigint, serverM2: bigint): Promise<any>;
     generateSalt(): Promise<bigint>;
     generatePasswordHash(salt: bigint, identity: string, password: string): Promise<bigint>;
     generatePreMasterSecret(a: bigint, B: bigint, x: bigint, u: bigint): Promise<bigint>;
@@ -39,8 +51,23 @@ declare class SRPClient extends AbstractSRPHandler {
     generatePublic(secret: bigint): Promise<bigint>;
 }
 
+declare const DEFAULT_PRIME = 21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819n;
+declare const DEFAULT_GENERATOR = 2n;
+declare const DEFAULT_KEY: bigint;
+declare function hexToBigint(hex: string): bigint;
+declare function bigintToHex(num: bigint, padZero?: boolean): string;
+declare function timingSafeEquals(a: string, b: string): any;
+
 declare class SRPServer extends AbstractSRPHandler {
     static create(prime?: bigint | string | undefined, generator?: bigint | string | undefined, key?: bigint | string | undefined): SRPServer;
+    step1(identity: string, salt: bigint, verifier: bigint): Promise<{
+        secret: bigint;
+        public: bigint;
+    }>;
+    step2(identity: string, salt: bigint, verifier: bigint, A: bigint, b: bigint, B: bigint, clientM1: bigint): Promise<{
+        key: bigint;
+        proof: bigint;
+    }>;
     generatePublic(secret: bigint, verifier: bigint): bigint;
     /**
      * Generate Pre Master Secret
@@ -54,4 +81,4 @@ declare class SRPServer extends AbstractSRPHandler {
     generatePreMasterSecret(A: bigint, b: bigint, verifier: bigint, u: bigint): bigint;
 }
 
-export { SRPClient, SRPServer };
+export { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME, SRPClient, SRPServer, bigintToHex, hexToBigint, timingSafeEquals };

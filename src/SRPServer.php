@@ -46,14 +46,12 @@ class SRPServer extends AbstractSRPHandler
         BigInteger $salt,
         BigInteger $verifier,
         BigInteger $A,
+        BigInteger $B,
         BigInteger $b,
         BigInteger $clientM1
     ): ProofResult {
         static::checkNotEmpty($A, 'A');
         static::checkNotEmpty($clientM1, 'M1');
-
-        // ((k*v + g^b) % N)
-        $B = $this->generatePublic($b, $verifier);
 
         // H(PAD(A) | PAD(B))
         $u = $this->generateCommonSecret($A, $B);

@@ -1,4 +1,5 @@
 import { mod, modPow, toBigint } from 'bigint-toolkit';
+import InvalidSessionProofError from '../error/InvalidSessionProofError';
 import { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME } from '../utils';
 import AbstractSRPHandler from './AbstractSRPHandler';
 
@@ -17,6 +18,47 @@ export default class SRPServer extends AbstractSRPHandler {
       toBigint(generator, 16),
       toBigint(key, 16),
     );
+  }
+
+  async step1(identity: string, salt: bigint, verifier: bigint) {
+    this.checkNotEmpty(identity, 'identity');
+    this.checkNotEmpty(salt, 'salt');
+    this.checkNotEmpty(verifier, 'verifier');
+
+    const b = await this.generateRandomSecret();
+
+    const B = await this.generatePublic(b, verifier);
+
+    return { secret: b, public: B };
+  }
+
+  async step2(
+    identity: string,
+    salt: bigint,
+    verifier: bigint,
+    A: bigint,
+    b: bigint,
+    B: bigint,
+    clientM1: bigint,
+  ) {
+    this.checkNotEmpty(A, 'A');
+    this.checkNotEmpty(clientM1, 'M1');
+
+    const u = await this.generateCommonSecret(A, B);
+
+    const S = await this.generatePreMasterSecret(A, b, verifier, u);
+
+    const K = await this.hash(S);
+
+    const M1 = await this.generateClientSessionProof(identity, salt, A, B, K);
+
+    if (!this.timingSafeEquals(M1.toString(), clientM1.toString())) {
+      throw new InvalidSessionProofError('Invalid client session proof.');
+    }
+
+    const proof = await this.generateServerSessionProof(A, M1, K);
+
+    return { key: K, proof };
   }
 
   public generatePublic(secret: bigint, verifier: bigint): bigint {

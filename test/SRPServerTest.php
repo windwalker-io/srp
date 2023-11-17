@@ -27,7 +27,7 @@ class SRPServerTest extends TestCase
             $data['g'],
             $data['k']
         );
-        $server->setAlgo($data['H']);
+        $server->setHasher($data['H']);
         $server->setSize($data['size']);
 
         $identity = $data['I'];

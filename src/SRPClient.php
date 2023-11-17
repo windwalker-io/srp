@@ -32,20 +32,21 @@ class SRPClient extends AbstractSRPHandler
         string $identity,
         string $password,
         BigInteger $salt,
-    ): ProofResult {
+    ): EphemeralResult {
         $a = $this->generateRandomSecret();
         $A = $this->generatePublic($a);
 
         // (SHA(s | SHA(I | `:` | P)))
         $x = $this->generatePasswordHash($salt, $identity, $password);
 
-        return new EphemeralResult($K, $M1, $x);
+        return new EphemeralResult($a, $A, $x);
     }
 
-    public function deriveSession(
+    public function step2(
         string $identity,
         BigInteger $salt,
         BigInteger $A,
+        BigInteger $a,
         BigInteger $B,
         BigInteger $x,
     ): ProofResult {
