@@ -22,7 +22,27 @@ export default [
     plugins: [
       dts()
     ]
-  }
+  },
+  {
+    input: 'src/client.ts',
+    output: {
+      file: 'dist/client.d.ts',
+      format: 'es',
+    },
+    plugins: [
+      dts()
+    ]
+  },
+  {
+    input: 'src/server.ts',
+    output: {
+      file: 'dist/server.d.ts',
+      format: 'es',
+    },
+    plugins: [
+      dts()
+    ]
+  },
 ];
 
 function buildConfig(type, umdName) {
