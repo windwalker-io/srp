@@ -8,7 +8,8 @@
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build": "cross-env NODE_ENV=development rollup -c",
     "watch": "cross-env NODE_ENV=development rollup -cw",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "release": "sh bin/release.sh"
   },
   "homepage": "https://github.com/windwalker-io/srp/assets",
   "repository": {

@@ -143,7 +143,7 @@ function hexPadZero(hex) {
  *
  * The second argument `padZero = true` will pad a `0` on start if return length is odd.
  */
-function bigintToHex$1(num, padZero = false) {
+function bigintToHex(num, padZero = false) {
     let hexString = num.toString(16);
     if (!padZero) {
         return hexString;
@@ -155,7 +155,7 @@ function bigintToHex$1(num, padZero = false) {
  * Bigint to hex conversion and pad a `0` on start if return length is odd.
  */
 function bigintToHexPadZero(num) {
-    return bigintToHex$1(num, true);
+    return bigintToHex(num, true);
 }
 
 /**
@@ -205,7 +205,7 @@ function bigintToUint8(num, handleNegative = false) {
 /**
  * Convert hex to bigint and add `-` sign if origin bigint is negative.
  */
-function hexToBigint$1(hex) {
+function hexToBigint(hex) {
     const isNegative = hex.startsWith('-');
     if (isNegative) {
         hex = hex.substring(1);
@@ -236,7 +236,7 @@ function toBigint(num, from = 10) {
         return BigInt(num);
     }
     else if (from === 16) {
-        return hexToBigint$1(num);
+        return hexToBigint(num);
     }
     else {
         let decimalValue = 0n;
@@ -288,18 +288,12 @@ function uint8ToBigint(bytes, handleNegative = false) {
  * set second argument as TRUE to inverse it.
  */
 function uint8ToHex(bytes, handleNegative = false) {
-    return bigintToHex$1(uint8ToBigint(bytes, handleNegative));
+    return bigintToHex(uint8ToBigint(bytes, handleNegative));
 }
 
 const DEFAULT_PRIME = 21766174458617435773191008891802753781907668374255538511144643224689886235383840957210909013086056401571399717235807266581649606472148410291413364152197364477180887395655483738115072677402235101762521901569820740293149529620419333266262073471054548368736039519702486226506248861060256971802984953561121442680157668000761429988222457090413873973970171927093992114751765168063614761119615476233422096442783117971236371647333871414335895773474667308967050807005509320424799678417036867928316761272274230314067548291133582479583061439577559347101961771406173684378522703483495337037655006751328447510550299250924469288819n;
 const DEFAULT_GENERATOR = 2n;
 const DEFAULT_KEY = toBigint('5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300', 16);
-function hexToBigint(hex) {
-    return hexToBigint$1(hex);
-}
-function bigintToHex(num, padZero = false) {
-    return bigintToHex$1(num, padZero);
-}
 function timingSafeEquals(a, b) {
     if (isNode()) {
         const { timingSafeEqual } = require('crypto');
@@ -525,5 +519,5 @@ class SRPClient extends AbstractSRPHandler {
     }
 }
 
-export { DEFAULT_GENERATOR, DEFAULT_KEY, DEFAULT_PRIME, bigintToHex, SRPClient as default, hexToBigint, timingSafeEquals };
+export { SRPClient as default };
 //# sourceMappingURL=client.es.js.map
