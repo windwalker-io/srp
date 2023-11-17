@@ -74,7 +74,7 @@ class SRPServer extends AbstractSRPHandler
         // H(A | M | K)
         $proof = $this->generateServerSessionProof($A, $M1, $K);
 
-        return new ProofResult($K, $proof);
+        return new ProofResult($K, $proof, $S);
     }
 
     /**

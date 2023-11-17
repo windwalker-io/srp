@@ -66,7 +66,8 @@ export default class SRPClient extends AbstractSRPHandler {
 
     return {
       key: K,
-      proof: M1
+      proof: M1,
+      preMasterSecret: S
     };
   }
 

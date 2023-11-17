@@ -56,9 +56,14 @@ export default class SRPServer extends AbstractSRPHandler {
       throw new InvalidSessionProofError('Invalid client session proof.');
     }
 
+    // M2
     const proof = await this.generateServerSessionProof(A, M1, K);
 
-    return { key: K, proof };
+    return {
+      key: K,
+      proof,
+      preMasterSecret: S
+    };
   }
 
   public generatePublic(secret: bigint, verifier: bigint): bigint {

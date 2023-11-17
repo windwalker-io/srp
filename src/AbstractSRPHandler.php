@@ -17,20 +17,26 @@ abstract class AbstractSRPHandler
 
     public const SECRET_256BIT = 32;
 
-    protected const DEFAULT_PRIME = '217661744586174357731910088918027537819076683742555385111446432246898862353838409572109' .
+    public const SECRET_512BIT = 64;
+
+    public const SECRET_1024BIT = 128;
+
+    public const DEFAULT_PRIME = '217661744586174357731910088918027537819076683742555385111446432246898862353838409572109' .
     '090130860564015713997172358072665816496064721484102914133641521973644771808873956554837381150726774022351017625' .
     '219015698207402931495296204193332662620734710545483687360395197024862265062488610602569718029849535611214426801' .
     '576680007614299882224570904138739739701719270939921147517651680636147611196154762334220964427831179712363716473' .
     '338714143358957734746673089670508070055093204247996784170368679283167612722742303140675482911335824795830614395' .
     '77559347101961771406173684378522703483495337037655006751328447510550299250924469288819';
 
-    protected const DEFAULT_GENERATOR = '2';
+    public const DEFAULT_GENERATOR = '2';
 
-    protected const DEFAULT_KEY = '5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300';
-
-    protected string|\Closure $hasher = 'sha256';
+    public const DEFAULT_KEY = '5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300';
 
     protected int $length = self::SECRET_256BIT;
+
+    protected bool $padEnabled = true;
+
+    protected string|\Closure $hasher = 'sha256';
 
     public static function bigInteger(string|BigInteger $num, int $from = 10): BigInteger
     {
@@ -299,8 +305,24 @@ abstract class AbstractSRPHandler
 
     protected function pad(BigInteger $val): BigInteger
     {
+        if (!$this->padEnabled) {
+            return $val;
+        }
+
         $length = strlen(static::intToBytes($this->getPrime()));
 
         return BigInteger::of(str_pad((string) $val, $length, '0'));
+    }
+
+    public function isPadEnabled(): bool
+    {
+        return $this->padEnabled;
+    }
+
+    public function enablePad(bool $padString): static
+    {
+        $this->padEnabled = $padString;
+
+        return $this;
     }
 }

@@ -68,7 +68,7 @@ class SRPClient extends AbstractSRPHandler
             $K
         );
 
-        return new ProofResult($K, $M1);
+        return new ProofResult($K, $M1, $S);
     }
 
     public function step3(BigInteger $A, BigInteger $K, BigInteger $M1, BigInteger $serverM2): void

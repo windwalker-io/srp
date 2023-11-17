@@ -1,13 +1,11 @@
-import {
-  bigintToUint8,
-  randomBytes, toBigint, uint8ToBigint, uint8ToHex
-} from 'bigint-toolkit';
+import { bigintToUint8, randomBytes, toBigint, uint8ToBigint, uint8ToHex } from 'bigint-toolkit';
 import { HasherFunction } from '../types';
 import { concatArrayBuffers, isNode, str2buffer, timingSafeEquals } from '../utils';
 
 export default abstract class AbstractSRPHandler {
   protected length: number = 256 / 8;
-  protected hasher: string|HasherFunction;
+  protected hasher: string | HasherFunction;
+  protected padEnabled: boolean = true;
 
   constructor(
     protected prime: bigint,
@@ -17,7 +15,7 @@ export default abstract class AbstractSRPHandler {
     // ...
   }
 
-  setHasher(handler: string|HasherFunction) {
+  setHasher(handler: string | HasherFunction) {
     this.hasher = handler;
     return this;
   }
@@ -102,7 +100,7 @@ export default abstract class AbstractSRPHandler {
     if (typeof func === 'string') {
       func = this.getHasherByName(func);
     }
-    
+
     let hash = await func(buffer, this.getLength());
 
     if (hash instanceof Uint8Array) {
@@ -153,11 +151,13 @@ export default abstract class AbstractSRPHandler {
   }
 
   protected pad(val: bigint): bigint {
+    if (!this.padEnabled) {
+      return val;
+    }
+
     const primeLength = this.intToBytes(this.getPrime()).length;
 
-    const valStr = val.toString(16);
-
-    const paddedStr = valStr.padStart(primeLength, '0');
+    const paddedStr = val.toString(16).padStart(primeLength, '0');
 
     return BigInt('0x' + paddedStr);
   }
@@ -169,5 +169,14 @@ export default abstract class AbstractSRPHandler {
 
   protected timingSafeEquals(a: string, b: string) {
     return timingSafeEquals(a, b);
+  }
+
+  public isPadEnabled(): boolean {
+    return this.padEnabled;
+  }
+
+  public enablePad(enable = true): this {
+    this.padEnabled = Boolean(enable);
+    return this;
   }
 }
