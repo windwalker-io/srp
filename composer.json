@@ -2,7 +2,7 @@
     "name": "windwalker/srp",
     "type": "library",
     "license": "MIT",
-    "description": "A modern PHP/JS package of SRP-6a (RFC0504). Contains server and client part to help developer use on any cases.",
+    "description": "A modern PHP/JS package of SRP-6a (RFC5054). Contains server and client part to help developer use on any cases.",
     "keywords": ["srp", "password", "security", "passwordless"],
     "autoload": {
         "psr-4": {
