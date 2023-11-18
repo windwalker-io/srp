@@ -263,4 +263,4 @@ When client and server generating `M`, they will both generate a premaster secre
 
 If you want to report bug, simply open an issue. Any PR is welcome and can speed up the fixing process.
 
-If you have a security issue, please send to `asika32874@gmail.com` (Simon).
+If you have a security issue, please send to `asika32764@gmail.com` (Simon).
