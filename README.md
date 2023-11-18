@@ -24,7 +24,7 @@
 </p>
 
 
-This is a modern PHP/JS package which provides an implementation of SRP-6a ([RFC0504](https://datatracker.ietf.org/doc/html/rfc5054)). The PHP / JS side both have server and client part to help developer use on any cases.
+This is a modern PHP/JS package which provides an implementation of SRP-6a ([RFC5054](https://datatracker.ietf.org/doc/html/rfc5054)). The PHP / JS side both have server and client part to help developer use on any cases.
 
 This package passed the srptools [Test Vectors](https://github.com/secure-remote-password/test-vectors/), it means that this package is fully implement the RFC5054 spec, and you can use this package to work with any other packages which is also fully adheres the RFC spec. The main difference is that this package will pad value to fit the length of `g` (prime) value before hash, however, most of the SRP packages will probably not pad them before hashing.
 
