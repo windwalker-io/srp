@@ -1,6 +1,6 @@
 {
   "name": "@windwalker-io/srp",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "A modern PHP/JS package of SRP-6a (RFC0504). Contains server and client part to help developer use on any cases.",
   "main": "dist/srp.cjs",
   "typings": "dist/index.d.ts",
