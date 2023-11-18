@@ -1,5 +1,27 @@
 # PHP SRP (Secure Remote Password) [PHP/JS]
 
+<p align="center">
+    <br/>
+    <img src="https://user-images.githubusercontent.com/1639206/151679867-8df93936-e4af-4677-a6f3-eb33d27e038b.svg" alt="Windwalker"
+        height="75">
+    <br/>
+</p>
+
+<h2 align="center">SRP Package (PHP)</h2>
+
+<p align="center">
+    Windwalker SRP Package <a href="https://github.com/windwalker-io/srp">PHP</a> / <a href="https://github.com/windwalker-io/srp/tree/main/assets">JS</a>
+</p>
+
+
+<p align="center">
+    <img alt="GitHub" src="https://img.shields.io/github/license/windwalker-io/srp?style=flat-square">
+    <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/windwalker-io/srp/test-php.yml?label=test&style=flat-square">
+    <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/windwalker/srp?style=flat-square">
+    <img alt="Packagist Version" src="https://img.shields.io/packagist/v/windwalker/srp?style=flat-square">
+</p>
+
+
 This is a modern PHP/JS package which provides an implementation of SRP-6a ([RFC0504](https://datatracker.ietf.org/doc/html/rfc5054)). The PHP / JS side both have server and client part to help developer use on any cases.
 
 This package passed the srptools [Test Vectors](https://github.com/secure-remote-password/test-vectors/), it means that this package is fully implement the RFC5054 spec, and you can use this package to work with any other packages which is also fully adheres the RFC spec. The main difference is that this package will pad value to fit the length of `g` (prime) value before hash, however, most of the SRP packages will probably not pad them before hashing.
@@ -83,12 +105,12 @@ There has some more configure options:
 use Windwalker\SRP\SRPServer;
 
 // Set the secret size
-$server->setSize(SRPServer::SECRET_512BIT); // or int(64)
+$server->setSize(512); // Default is 256
 // Same as
 $server->setLength(64);
 
 
-// Set Hash algo
+// Set Hash algo,  default is `sha256`
 $server->setHaser('sha1');
 $server->setHaser('sha256');
 $server->setHaser('sha384');
@@ -223,7 +245,7 @@ There is an optional Client step3 is that you can verify the `M2` to authority s
 
 ### About the `S` and `M`
 
-When client and server generating `M`, they will both generate a premaster secret (`S`). The `S` should be same, event if the 2 sides did not send `S` to another. The `M1` and `M2` is a verifier to make sure both side have a same `S`. So, `S` can be a trusted session key or encryption key if you want to do some other cryptography behavior in the future.
+When client and server generating `M`, they will both generate a premaster secret (`S`). The `S` should be same, even if the 2 sides did not send `S` to another. The `M1` and `M2` is a verifier to make sure both side have a same `S`. So, `S` can be a trusted session key or encryption key if you want to do some other cryptography behavior in the future.
 
 ## Some Important Notes
 
