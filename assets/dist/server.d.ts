@@ -6,6 +6,7 @@ declare abstract class AbstractSRPHandler {
     protected key: bigint;
     protected length: number;
     protected hasher: string | HasherFunction;
+    protected padEnabled: boolean;
     constructor(prime: bigint, generator: bigint, key: bigint);
     setHasher(handler: string | HasherFunction): this;
     generateRandomSecret(): Promise<bigint>;
@@ -25,6 +26,8 @@ declare abstract class AbstractSRPHandler {
     protected pad(val: bigint): bigint;
     private intToBytes;
     protected timingSafeEquals(a: string, b: string): any;
+    isPadEnabled(): boolean;
+    enablePad(enable?: boolean): this;
 }
 
 declare class SRPServer extends AbstractSRPHandler {
@@ -36,6 +39,7 @@ declare class SRPServer extends AbstractSRPHandler {
     step2(identity: string, salt: bigint, verifier: bigint, A: bigint, b: bigint, B: bigint, clientM1: bigint): Promise<{
         key: bigint;
         proof: bigint;
+        preMasterSecret: bigint;
     }>;
     generatePublic(secret: bigint, verifier: bigint): bigint;
     /**

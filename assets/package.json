@@ -1,11 +1,16 @@
 {
   "name": "@windwalker-io/srp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A modern PHP/JS package of SRP-6a (RFC0504). Contains server and client part to help developer use on any cases.",
   "main": "dist/srp.cjs",
   "typings": "dist/index.d.ts",
   "license": "MIT",
-  "keywords": ["srp", "password", "security", "passwordless"],
+  "keywords": [
+    "srp",
+    "password",
+    "security",
+    "passwordless"
+  ],
   "scripts": {
     "build:prod": "cross-env NODE_ENV=production rollup -c",
     "build": "cross-env NODE_ENV=development rollup -c",

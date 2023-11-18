@@ -349,6 +349,7 @@ class AbstractSRPHandler {
         this.generator = generator;
         this.key = key;
         this.length = 256 / 8;
+        this.padEnabled = true;
         // ...
     }
     setHasher(handler) {
@@ -439,9 +440,11 @@ class AbstractSRPHandler {
         }
     }
     pad(val) {
+        if (!this.padEnabled) {
+            return val;
+        }
         const primeLength = this.intToBytes(this.getPrime()).length;
-        const valStr = val.toString(16);
-        const paddedStr = valStr.padStart(primeLength, '0');
+        const paddedStr = val.toString(16).padStart(primeLength, '0');
         return BigInt('0x' + paddedStr);
     }
     intToBytes(val) {
@@ -450,6 +453,13 @@ class AbstractSRPHandler {
     }
     timingSafeEquals(a, b) {
         return timingSafeEquals(a, b);
+    }
+    isPadEnabled() {
+        return this.padEnabled;
+    }
+    enablePad(enable = true) {
+        this.padEnabled = Boolean(enable);
+        return this;
     }
 }
 
@@ -488,7 +498,8 @@ class SRPClient extends AbstractSRPHandler {
         const M1 = await this.generateClientSessionProof(identity, salt, A, B, K);
         return {
             key: K,
-            proof: M1
+            proof: M1,
+            preMasterSecret: S
         };
     }
     async step3(A, K, M1, serverM2) {
@@ -553,8 +564,13 @@ class SRPServer extends AbstractSRPHandler {
         if (!this.timingSafeEquals(M1.toString(), clientM1.toString())) {
             throw new InvalidSessionProofError('Invalid client session proof.');
         }
+        // M2
         const proof = await this.generateServerSessionProof(A, M1, K);
-        return { key: K, proof };
+        return {
+            key: K,
+            proof,
+            preMasterSecret: S
+        };
     }
     generatePublic(secret, verifier) {
         const N = this.getPrime();
