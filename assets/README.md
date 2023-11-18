@@ -17,7 +17,9 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/windwalker-io/srp?style=flat-square">
     <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/windwalker-io/srp/test-js.yml?label=test&style=flat-square">
     <img alt="npm" src="https://img.shields.io/npm/dw/%40windwalker-io/srp?style=flat-square">
-    <img alt="npm (scoped)" src="https://img.shields.io/npm/v/%40windwalker-io/srp?style=flat-square&logo=npm&label=Version">
+    <a href="https://www.npmjs.com/package/@windwalker-io/srp">
+      <img alt="npm (scoped)" src="https://img.shields.io/npm/v/%40windwalker-io/srp?style=flat-square&logo=npm&label=Version">
+    </a>
 </p>
 
 

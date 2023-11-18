@@ -10,7 +10,7 @@
 <h2 align="center">SRP Package (PHP)</h2>
 
 <p align="center">
-    Windwalker SRP Package <a href="https://github.com/windwalker-io/srp">PHP</a> / <a href="https://github.com/windwalker-io/srp/tree/main/assets">JS</a>
+    Windwalker SRP Package <a href="https://github.com/windwalker-io/srp">PHP</a> | <a href="https://github.com/windwalker-io/srp/tree/main/assets">JS</a>
 </p>
 
 
@@ -18,7 +18,9 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/windwalker-io/srp?style=flat-square">
     <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/windwalker-io/srp/test-php.yml?label=test&style=flat-square">
     <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/windwalker/srp?style=flat-square">
-    <img alt="Packagist Version" src="https://img.shields.io/packagist/v/windwalker/srp?style=flat-square">
+    <a href="https://packagist.org/packages/windwalker/srp">
+        <img alt="Packagist Version" src="https://img.shields.io/packagist/v/windwalker/srp?style=flat-square">
+    </a>
 </p>
 
 
@@ -27,6 +29,8 @@ This is a modern PHP/JS package which provides an implementation of SRP-6a ([RFC
 This package passed the srptools [Test Vectors](https://github.com/secure-remote-password/test-vectors/), it means that this package is fully implement the RFC5054 spec, and you can use this package to work with any other packages which is also fully adheres the RFC spec. The main difference is that this package will pad value to fit the length of `g` (prime) value before hash, however, most of the SRP packages will probably not pad them before hashing.
 
 We also provide a way to disable the padding behavior if you want to use this package with another package that does not pad values before hashing.
+
+
 
 ## Installation
 
