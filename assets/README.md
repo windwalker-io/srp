@@ -60,7 +60,7 @@ const server = new SRPServer(
 );
 ```
 
-these value can be BigInteger format, we use [brick/math](https://github.com/brick/math) as the BigInteger library.
+these value can be ES2020 BigInt format.
 
 ```ts
 import { SRPServer, DEFAULT_PRIME, DEFAULT_GENERATOR, DEFAULT_KEY } from '@windwalker-io/srp';
