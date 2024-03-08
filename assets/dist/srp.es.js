@@ -349,6 +349,7 @@ class AbstractSRPHandler {
         this.generator = generator;
         this.key = key;
         this.length = 256 / 8;
+        this.hasher = 'sha256';
         this.padEnabled = true;
         // ...
     }
@@ -464,7 +465,7 @@ class AbstractSRPHandler {
 }
 
 class SRPClient extends AbstractSRPHandler {
-    static create(prime = undefined, generator = undefined, key = undefined) {
+    static create(prime, generator, key) {
         prime ?? (prime = DEFAULT_PRIME);
         generator ?? (generator = DEFAULT_GENERATOR);
         key ?? (key = DEFAULT_KEY);
@@ -540,7 +541,7 @@ class InvalidSessionProofError extends Error {
 }
 
 class SRPServer extends AbstractSRPHandler {
-    static create(prime = undefined, generator = undefined, key = undefined) {
+    static create(prime, generator, key) {
         prime ?? (prime = DEFAULT_PRIME);
         generator ?? (generator = DEFAULT_GENERATOR);
         key ?? (key = DEFAULT_KEY);

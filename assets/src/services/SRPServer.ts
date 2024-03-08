@@ -5,9 +5,9 @@ import AbstractSRPHandler from './AbstractSRPHandler';
 
 export default class SRPServer extends AbstractSRPHandler {
   public static create(
-    prime: bigint | string | undefined = undefined,
-    generator: bigint | string | undefined = undefined,
-    key: bigint | string | undefined = undefined
+    prime?: bigint | string,
+    generator?: bigint | string,
+    key?: bigint | string
   ) {
     prime ??= DEFAULT_PRIME;
     generator ??= DEFAULT_GENERATOR;

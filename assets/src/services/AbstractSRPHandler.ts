@@ -4,7 +4,7 @@ import { concatArrayBuffers, isNode, str2buffer, timingSafeEquals } from '../uti
 
 export default abstract class AbstractSRPHandler {
   protected length: number = 256 / 8;
-  protected hasher: string | HasherFunction;
+  protected hasher: string | HasherFunction = 'sha256';
   protected padEnabled: boolean = true;
 
   constructor(

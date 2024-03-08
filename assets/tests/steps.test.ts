@@ -3,7 +3,7 @@ import { getHasher, getTestVectors, hexExpect } from './test-utils';
 
 const testVectors = getTestVectors();
 
-describe('SRPStpesTest', () => {
+describe('SRPStepsTest', () => {
   test.each(testVectors)('testing steps: $H:$size', async (data) => {
     const server = SRPServer.create(
       data.N,

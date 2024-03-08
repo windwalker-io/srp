@@ -31,7 +31,7 @@ declare abstract class AbstractSRPHandler {
 }
 
 declare class SRPClient extends AbstractSRPHandler {
-    static create(prime?: bigint | string | undefined, generator?: bigint | string | undefined, key?: bigint | string | undefined): SRPClient;
+    static create(prime?: bigint | string, generator?: bigint | string, key?: bigint | string): SRPClient;
     register(identity: string, password: string): Promise<{
         salt: bigint;
         verifier: bigint;
