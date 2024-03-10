@@ -21,7 +21,7 @@
     <a href="https://packagist.org/packages/windwalker/srp">
         <img alt="Packagist Version" src="https://img.shields.io/packagist/v/windwalker/srp?style=flat-square">
     </a>
-</p>
+</p>get
 
 
 This is a modern PHP/JS package which provides an implementation of SRP-6a ([RFC5054](https://datatracker.ietf.org/doc/html/rfc5054)). The PHP / JS side both have server and client part to help developer use on any cases.
