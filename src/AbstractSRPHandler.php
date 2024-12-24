@@ -67,9 +67,9 @@ abstract class AbstractSRPHandler
     }
 
     public static function create(
-        BigInteger|string $prime = null,
-        BigInteger|string $generator = null,
-        BigInteger|string $key = null
+        BigInteger|string|null $prime = null,
+        BigInteger|string|null $generator = null,
+        BigInteger|string|null $key = null
     ): static {
         $prime ??= static::bigInteger(static::DEFAULT_PRIME);
         $generator ??= static::bigInteger(static::DEFAULT_GENERATOR);
