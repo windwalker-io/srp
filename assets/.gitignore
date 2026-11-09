@@ -15,6 +15,9 @@ Thumbs.db
 .env*
 !.env.dist
 
+# Packages #
+.yarn
+
 # Libraries
 /vendor
 /node_modules
