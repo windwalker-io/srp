@@ -478,7 +478,7 @@ class SRPServer extends AbstractSRPHandler {
         const B = await this.generatePublic(b, verifier);
         return { secret: b, public: B };
     }
-    async step2(identity, salt, verifier, A, b, B, clientM1) {
+    async step2(identity, salt, verifier, A, B, b, clientM1) {
         this.checkNotEmpty(A, 'A');
         this.checkNotEmpty(clientM1, 'M1');
         const u = await this.generateCommonSecret(A, B);

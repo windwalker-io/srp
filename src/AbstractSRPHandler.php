@@ -50,9 +50,9 @@ abstract class AbstractSRPHandler
     public static function createFromConfig(array $config): static
     {
         $handler = static::create(
-            $config['prime'] ?? null,
-            $config['generator'] ?? null,
-            $config['key'] ?? null,
+            isset($config['prime']) ? static::bigInteger($config['prime']) : null,
+            isset($config['generator']) ? static::bigInteger($config['generator']) : null,
+            isset($config['key']) ? static::bigInteger($config['key'], 16) : null,
         );
 
         if ($config['hasher'] ?? null) {

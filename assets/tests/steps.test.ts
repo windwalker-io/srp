@@ -46,7 +46,7 @@ describe('SRPStepsTest', () => {
     // Send identity & A & M1 to server and compare it.
     // The salt & verifier stored on user data, get it from DB.
     // The b, B stored in session state, get and clear them.
-    const { proof: M2 } = await server.step2(identity, salt, verifier, A, b, B, M1);
+    const { proof: M2 } = await server.step2(identity, salt, verifier, A, B, b, M1);
 
     // Server returns M2 to Client
     // Client step (3) (optional)

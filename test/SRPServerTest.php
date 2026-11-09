@@ -19,6 +19,19 @@ class SRPServerTest extends TestCase
 {
     use SRPTestTrait;
 
+    public function testCreateFromConfigParsesDecimalPrimeAndGenerator(): void
+    {
+        $server = SRPServer::createFromConfig([
+            'prime' => SRPServer::DEFAULT_PRIME,
+            'generator' => SRPServer::DEFAULT_GENERATOR,
+            'key' => SRPServer::DEFAULT_KEY,
+        ]);
+
+        self::assertEquals(BigInteger::of(SRPServer::DEFAULT_PRIME), $server->getPrime());
+        self::assertEquals(BigInteger::of(SRPServer::DEFAULT_GENERATOR), $server->getGenerator());
+        self::assertEquals(BigInteger::fromBase(SRPServer::DEFAULT_KEY, 16), $server->getKey());
+    }
+
     #[DataProvider('vectorsProvider')]
     public function testVectors(array $data): void
     {

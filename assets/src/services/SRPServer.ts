@@ -37,8 +37,8 @@ export default class SRPServer extends AbstractSRPHandler {
     salt: bigint,
     verifier: bigint,
     A: bigint,
-    b: bigint,
     B: bigint,
+    b: bigint,
     clientM1: bigint,
   ) {
     this.checkNotEmpty(A, 'A');

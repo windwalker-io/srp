@@ -91,14 +91,14 @@ server.setLength(64);
 
 
 // Set Hash algo, default is `sha256`
-server.setHaser('sha1');
-server.setHaser('sha256');
-server.setHaser('sha384');
-server.setHaser('sha512');
+server.setHasher('sha1');
+server.setHasher('sha256');
+server.setHasher('sha384');
+server.setHasher('sha512');
 
 // Web has no native blake2b, you must use custom callback to hash.
 // Set custom hash logic
-server.setHaser(async (buffer) => ...);
+server.setHasher(async (buffer) => ...);
 
 
 // Disable padding
@@ -108,11 +108,11 @@ server.enablePad(false);
 About the custom hasher callback, the input and return value is must be `Uint8Array`, you must convert it by your-self.
 
 ```ts
-server.setHaser(async (buffer: Uint8Array) => {
+server.setHasher(async (buffer: Uint8Array) => {
   return await someHashFunc(buffer);
 });
 
-server.setHaser(async (buffer: Uint8Array) => {
+server.setHasher(async (buffer: Uint8Array) => {
   return str2uint8(await someHashFuncOnlyReturnString(buffer));
 });
 ```
@@ -158,7 +158,7 @@ const { key: K, proof: M1 } = await client.step2(identity, salt, A, a, B, x);
 // Send identity & A & M1 to server and compare it.
 // The salt & verifier stored on user data, get it from DB.
 // The b, B stored in session state, get and clear them.
-const { proof: M2 } = await server.step2(identity, salt, verifier, A, b, B, M1);
+const { proof: M2 } = await server.step2(identity, salt, verifier, A, B, b, M1);
 
 // Server returns M2 to Client
 // Client step (3) (optional)

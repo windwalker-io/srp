@@ -36,7 +36,7 @@ declare class SRPServer extends AbstractSRPHandler {
         secret: bigint;
         public: bigint;
     }>;
-    step2(identity: string, salt: bigint, verifier: bigint, A: bigint, b: bigint, B: bigint, clientM1: bigint): Promise<{
+    step2(identity: string, salt: bigint, verifier: bigint, A: bigint, B: bigint, b: bigint, clientM1: bigint): Promise<{
         key: bigint;
         proof: bigint;
         preMasterSecret: bigint;

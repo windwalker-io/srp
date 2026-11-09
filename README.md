@@ -59,15 +59,16 @@ You must prepare a large safe prime, a generator and a key, the prime and genera
 ```php
 use Windwalker\SRP\SRPServer;
 use Windwalker\SRP\SRPClient;
+use Brick\Math\BigInteger;
 
 $server = new SRPServer(
-    SRPServer::DEFAULT_PRIME, // 217661744586174357731910088918027537819...
-    SRPServer::DEFAULT_GENERATOR, // 02
-    SRPServer::DEFAULT_KEY, // 5b9e8ef059c6b32ea59fc1d322d37f04aa30bae5aa9003b8321e21ddb04e300
+    BigInteger::of(SRPServer::DEFAULT_PRIME),
+    BigInteger::of(SRPServer::DEFAULT_GENERATOR),
+    BigInteger::fromBase(SRPServer::DEFAULT_KEY, 16),
 );
 ```
 
-these value can be BigInteger format, we use [brick/math](https://github.com/brick/math) as the BigInteger library.
+The constructor requires `BigInteger` values. Convert the decimal prime and generator with `BigInteger::of()`, and the hexadecimal key with `BigInteger::fromBase($key, 16)`. The package uses [brick/math](https://github.com/brick/math) for `BigInteger`.
 
 ```php
 use Brick\Math\BigInteger;
@@ -115,19 +116,19 @@ $server->setLength(64);
 
 
 // Set Hash algo,  default is `sha256`
-$server->setHaser('sha1');
-$server->setHaser('sha256');
-$server->setHaser('sha384');
-$server->setHaser('sha512');
+$server->setHasher('sha1');
+$server->setHasher('sha256');
+$server->setHasher('sha384');
+$server->setHasher('sha512');
 
 // Blake2b will use sodium ext to hash it.
-$server->setHaser('blake2b-256');
-$server->setHaser('blake2b-224');
-$server->setHaser('blake2b-384');
-$server->setHaser('blake2b-512');
+$server->setHasher('blake2b-256');
+$server->setHasher('blake2b-224');
+$server->setHasher('blake2b-384');
+$server->setHasher('blake2b-512');
 
 // Set custom hash logic
-$server->setHaser(fn(string $str) => ...);
+$server->setHasher(fn(string $str) => ...);
 
 
 // Disable padding
