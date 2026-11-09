@@ -23,7 +23,7 @@ Thumbs.db
 
 # Remove above lines when you start a project
 composer.lock
-yarn.lock
+#yarn.lock
 package-lock.json
 
 # Windwalker
