@@ -22,7 +22,7 @@
     ],
     "minimum-stability": "beta",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2.0",
         "brick/math": ">=0.14.0 <0.21.0||^1.0"
     },
     "require-dev": {
